@@ -1,0 +1,49 @@
+{
+  "name": "odin-book",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/server.js",
+  "scripts": {
+    "build": "npm run build-ts && npm run lint",
+    "build-ts": "tsc",
+    "debug": "npm run build && npm run watch-debug",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
+    "watch-ts": "tsc -w",
+    "watch-debug": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run serve-debug\"",
+    "watch-node": "nodemon dist/server.js",
+    "watch-test": "npm run test -- --watchAll",
+    "serve": "node dist/server.js",
+    "serve-debug": "nodemon --inspect dist/server.js",
+    "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
+    "test": "jest",
+    "run": "npm run build && npm run serve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@typescript-eslint/parser": "^3.6.0",
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
+    "errorhandler": "^1.5.1",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.22",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.7.0",
+    "@types/concurrently": "^4.1.0",
+    "@types/node": "^14.0.20",
+    "@typescript-eslint/eslint-plugin": "^3.6.0",
+    "concurrently": "^5.0.0",
+    "eslint": "^7.4.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.0.5",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.6",
+    "typescript-eslint": "0.0.1-alpha.0"
+  }
+}
