@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { Schema, Document, model } from "mongoose";
 
 const userSchema = new Schema({
   name: {
@@ -27,11 +27,11 @@ export interface UserType extends Document {
   birthday: string;
 }
 
-export const UserNameing = {
-  NAME: "name",
-  EMAIL: "email",
-  BIRTHDAY: "birthday",
-  PHOTO_URL: "photoUrl",
+export const enum UserNameing{
+  NAME = "name",
+  EMAIL = "email",
+  BIRTHDAY = "birthday",
+  PHOTO_URL = "photoUrl",
 };
 
-export default mongoose.model<UserType>("User", userSchema);
+export default model<UserType>("User", userSchema);
