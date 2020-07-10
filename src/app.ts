@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import * as path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
-// import compression from "compression"; // compresses requests
+import compression from "compression";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 require("./dbconfig");
@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 
 app.set("port", process.env.PORT || 3000);
-// app.use(compression());
+app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -29,10 +29,10 @@ app.get("/", (req, res) => {
 
 app.use("/users/", userRouter);
 
-app.use((err, req:Request, res: Response)=>{
-  if(err){
+app.use((err, req: Request, res: Response) => {
+  if (err) {
     res.status(500).json(err);
   }
-})
+});
 
 export default app;

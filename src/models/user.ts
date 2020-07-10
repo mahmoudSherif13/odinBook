@@ -30,6 +30,6 @@ export const UserNameing = {
   EMAIL: "email",
   BIRTHDAY: "birthday",
   PHOTO_URL: "photoUrl",
-}
+};
 
 export default mongoose.model<UserType>("User", userSchema);
