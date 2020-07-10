@@ -12,6 +12,8 @@ const userSchema = new Schema({
   },
   photoUrl: String,
   birthday: String,
+},{
+  timestamps: true,
 });
 
 userSchema.virtual("url").get(function () {
