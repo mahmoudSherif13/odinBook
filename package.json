@@ -31,6 +31,7 @@
     "cookie-parser": "^1.4.5",
     "errorhandler": "^1.5.1",
     "express": "^4.17.1",
+    "express-validator": "^6.6.0",
     "mongoose": "^5.9.22",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
@@ -39,6 +40,7 @@
   "devDependencies": {
     "@types/compression": "^1.7.0",
     "@types/concurrently": "^4.1.0",
+    "@types/express-validator": "^3.0.0",
     "@types/mongoose": "^5.7.30",
     "@types/node": "^14.0.20",
     "@typescript-eslint/eslint-plugin": "^3.6.0",
