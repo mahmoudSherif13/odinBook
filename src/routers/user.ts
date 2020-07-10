@@ -5,12 +5,12 @@ import { UserNameing } from "../models/user";
 const router = Router();
 
 router.get("/", userController.index);
-router.post("/", validateUserDate(), validate, userController.create);
+router.post("/", validateUserData(), validate, userController.create);
 router.get("/:id", userController.show);
-router.put("/:id", validateUserDate(), validate, userController.update);
+router.put("/:id", validateUserData(), validate, userController.update);
 router.delete("/:id", userController.destroy);
 
-function validateUserDate() {
+function validateUserData() {
   return [
     body(UserNameing.NAME).trim().escape(),
     body(UserNameing.EMAIL).isEmail().escape(),
