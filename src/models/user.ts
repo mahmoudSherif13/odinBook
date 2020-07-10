@@ -1,8 +1,16 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 const userSchema = new Schema({
-  name: String,
-  email: String,
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    
+  },
   photoUrl: String,
   birthday: String,
 });
