@@ -1,12 +1,13 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import * as path from "path";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 // import compression from "compression"; // compresses requests
 import bodyParser from "body-parser";
-import * as userController from "./controllers/user";
 import dotenv from "dotenv";
 require("./dbconfig");
+
+import userRouter from "./routers/user";
 
 dotenv.config();
 const app = express();
@@ -26,7 +27,12 @@ app.get("/", (req, res) => {
   res.json({ message: "HI" });
 });
 
-app.get("/users", userController.list);
-app.get("/users/new", userController.create);
+app.use("/users/", userRouter);
+
+app.use((err, req:Request, res: Response)=>{
+  if(err){
+    res.status(500).json(err);
+  }
+})
 
 export default app;
