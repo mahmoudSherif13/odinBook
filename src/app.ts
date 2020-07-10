@@ -5,8 +5,10 @@ import logger from "morgan";
 // import compression from "compression"; // compresses requests
 import bodyParser from "body-parser";
 import * as userController from "./controllers/user";
+import dotenv from "dotenv";
 require("./dbconfig");
 
+dotenv.config();
 const app = express();
 
 app.set("port", process.env.PORT || 3000);

@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 
 const userSchema = new Schema({
   name: String,
-  email: String,
+  email: String,  
 });
 
 userSchema.virtual("url").get(function () {
