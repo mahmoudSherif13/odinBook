@@ -2,7 +2,9 @@ import mongoose, { Schema, Document } from "mongoose";
 
 const userSchema = new Schema({
   name: String,
-  email: String,  
+  email: String,
+  photoUrl: String,
+  birthday: String,
 });
 
 userSchema.virtual("url").get(function () {
@@ -12,6 +14,8 @@ userSchema.virtual("url").get(function () {
 export interface UserType extends Document {
   name: string;
   email: string;
+  photoUrl: string;
+  birthday: string;
 }
 
 export default mongoose.model<UserType>("User", userSchema);
