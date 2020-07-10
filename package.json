@@ -39,6 +39,7 @@
   "devDependencies": {
     "@types/compression": "^1.7.0",
     "@types/concurrently": "^4.1.0",
+    "@types/mongoose": "^5.7.30",
     "@types/node": "^14.0.20",
     "@typescript-eslint/eslint-plugin": "^3.6.0",
     "concurrently": "^5.0.0",
