@@ -15,7 +15,7 @@ function validateUserData() {
     body(UserNameing.NAME).trim().escape(),
     body(UserNameing.EMAIL).isEmail().escape(),
     body(UserNameing.BIRTHDAY).escape(),
-    body(UserNameing.PHOTO_URL).isURL().escape(),
+    body(UserNameing.PHOTO_URL).optional().isURL().escape(),
   ];
 }
 
