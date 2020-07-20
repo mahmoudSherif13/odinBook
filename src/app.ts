@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 require("./dbconfig");
 
 import userRouter from "./routers/user";
+import postRouter from "./routers/post";
 
 dotenv.config();
 const app = express();
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/users/", userRouter);
+app.use("/posts/", postRouter);
 
 app.use((err, req: Request, res: Response) => {
   if (err) {
