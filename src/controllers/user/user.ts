@@ -1,6 +1,6 @@
-import User from "../models/user";
+import User from "../../models/user";
 import { Request, Response, NextFunction } from "express";
-import { userNotFounded } from "../errorCodes";
+import { userNotFounded } from "../../errorCodes";
 
 export function index(req: Request, res: Response, next: NextFunction): void {
   User.find()

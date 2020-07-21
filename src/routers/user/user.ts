@@ -1,7 +1,9 @@
 import { Router, NextFunction, Response, Request } from "express";
-import * as userController from "../controllers/user";
+import * as userController from "../../controllers/user/user";
 import { body, validationResult } from "express-validator";
-import { UserNameing } from "../models/user";
+import { UserNameing } from "../../models/user";
+import friendRequestRouter from "./friendRequest";
+import friendsRouter from "./friends";
 const router = Router();
 
 router.get("/", userController.index);
@@ -9,6 +11,9 @@ router.post("/", validateUserData(), validate, userController.create);
 router.get("/:id", userController.show);
 router.put("/:id", validateUserData(), validate, userController.update);
 router.delete("/:id", userController.destroy);
+
+router.use("/", friendRequestRouter);
+router.use("/", friendsRouter);
 
 function validateUserData() {
   return [

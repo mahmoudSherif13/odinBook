@@ -7,7 +7,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 require("./dbconfig");
 
-import userRouter from "./routers/user";
+import userRouter from "./routers/user/user";
 import postRouter from "./routers/post";
 
 dotenv.config();

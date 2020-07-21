@@ -2,63 +2,15 @@ import request from "supertest";
 import app from "../app";
 import User from "../models/user";
 import { userNotFounded } from "../errorCodes";
+import { users, totalInvalidUser, updatedUser, idvalidId } from "./testdata";
+import { expectUser } from "./helper";
 require("../mongoConfigTesting");
 
-const users = [
-  {
-    name: "jone",
-    email: "jone@gmail.com",
-    photoUrl: "url.com/photo.jpg",
-    birthday: "20-12-2020",
-  },
-  {
-    name: "jojo",
-    email: "jojo@jojo_cop.com",
-  },
-  {
-    name: "reka",
-    email: "reka@anne.com",
-  },
-];
-
-const updatedUser = {
-  name: "jone",
-  email: "jone@gmail.com",
-  photoUrl: "url.com/photo.jpg",
-  birthday: "20-12-2020",
-};
-
-const totalInvalidUser = {
-  name: "jone",
-  email: "jonegmail.com",
-  photoUrl: "urlphoto",
-};
-
 let addedUsers = [];
-
-const idvalidId = "444444444444444444444444";
 
 async function clearUserData() {
   await User.deleteMany({});
   addedUsers = [];
-}
-
-function expectUser(resived, expected) {
-  expect(resived._id).toBeDefined();
-  expect(resived.name).toEqual(expected.name);
-  expect(resived.email).toEqual(expected.email);
-  if (expected.photoUrl) {
-    expect(resived.photoUrl).toBeDefined();
-  }
-  if (expected.birthday) {
-    expect(resived.birthday).toEqual(expected.birthday);
-  }
-  if (expected.createdAt) {
-    expect(new Date(resived.createdAt)).toEqual(expected.createdAt);
-  }
-  if (expected.updatedAt) {
-    expect(new Date(resived.updatedAt)).toEqual(expected.updatedAt);
-  }
 }
 
 describe("GET /users/", () => {

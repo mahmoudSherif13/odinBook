@@ -13,6 +13,18 @@ const userSchema = new Schema(
     },
     photoUrl: String,
     birthday: String,
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    friendsRequests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,
@@ -23,11 +35,20 @@ userSchema.virtual("url").get(function () {
   return "/users/" + this._id;
 });
 
-export interface UserType extends Document {
+export interface IUser extends Document {
   name: string;
   email: string;
   photoUrl?: string;
   birthday?: string;
+  friends?: IUser[] | string[];
+  friendsRequests?: IUser[] | string[];
+
+  //time stamps
+  createdAt?: Date;
+  updatedAt?: Date;
+
+  // virtual
+  url?: string;
 }
 
 export const enum UserNameing {
@@ -37,4 +58,4 @@ export const enum UserNameing {
   PHOTO_URL = "photoUrl",
 }
 
-export default model<UserType>("User", userSchema);
+export default model<IUser>("User", userSchema);
