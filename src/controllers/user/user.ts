@@ -2,6 +2,7 @@ import User from "../../models/user";
 import { Request, Response, NextFunction } from "express";
 import { userNotFounded } from "../../errorCodes";
 import * as bcrypt from "bcryptjs";
+import { promises } from "fs";
 
 export function index(req: Request, res: Response, next: NextFunction): void {
   User.find()
@@ -38,16 +39,19 @@ export function show(req: Request, res: Response, next: NextFunction): void {
     .catch((err) => next(err));
 }
 
-export function update(req: Request, res: Response, next: NextFunction): void {
-  User.findByIdAndUpdate(req.params.id, req.body)
-    .exec()
-    .then((user) => {
-      if (user) {
-        res.json(user);
-      }
-      res.status(404).json(userNotFounded);
-    })
-    .catch((err) => next(err));
+export async function update(req: Request, res: Response, next: NextFunction) {
+  try {
+    const userData = req.body;
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    userData.password = hashedPassword;
+    const user = await User.findByIdAndUpdate(req.params.id, userData);
+    if (user) {
+      res.json(user);
+    }
+    res.status(404).json(userNotFounded);
+  } catch(err){
+    next(err);
+  }
 }
 
 export function destroy(req: Request, res: Response, next: NextFunction): void {
