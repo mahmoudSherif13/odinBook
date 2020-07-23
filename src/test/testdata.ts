@@ -4,16 +4,19 @@ export const users = [
   {
     name: "jone",
     email: "jone@gmail.com",
+    password: "pass",
     photoUrl: "url.com/photo.jpg",
     birthday: "20-12-2020",
   },
   {
     name: "jojo",
     email: "jojo@jojo_cop.com",
+    password: "pass",
   },
   {
     name: "reka",
     email: "reka@anne.com",
+    password: "pass",
   },
 ];
 

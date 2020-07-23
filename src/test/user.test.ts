@@ -4,7 +4,7 @@ import User from "../models/user";
 import { userNotFounded } from "../errorCodes";
 import { users, totalInvalidUser, updatedUser, idvalidId } from "./testdata";
 import { expectUser } from "./helper";
-require("../mongoConfigTesting");
+import "../mongoConfigTesting";
 
 let addedUsers = [];
 

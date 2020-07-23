@@ -6,10 +6,10 @@ export async function index(req: Request, res: Response, next: NextFunction) {
     const user = await User.findById(req.params.userId)
       .populate("friends", "name email photoUrl")
       .exec();
-    if(user?.friends?.length > 0){
+    if (user?.friends?.length > 0) {
       res.json(user.friends);
-    }else{
-      res.json({err: "no friends"})
+    } else {
+      res.json({ err: "no friends" });
     }
   } catch (err) {
     next(err);
@@ -19,10 +19,10 @@ export async function index(req: Request, res: Response, next: NextFunction) {
 export async function destroy(req: Request, res: Response, next: NextFunction) {
   try {
     await User.findByIdAndUpdate(req.params.userId, {
-      $pull: {friends: req.params.id}
+      $pull: { friends: req.params.id },
     }).exec();
-    res.json({done: "delete done"});
-  } catch(err) {
+    res.json({ done: "delete done" });
+  } catch (err) {
     next(err);
   }
 }

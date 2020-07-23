@@ -1,6 +1,7 @@
 import User from "../../models/user";
 import { Request, Response, NextFunction } from "express";
 import { userNotFounded } from "../../errorCodes";
+import * as bcrypt from "bcryptjs";
 
 export function index(req: Request, res: Response, next: NextFunction): void {
   User.find()
@@ -9,10 +10,16 @@ export function index(req: Request, res: Response, next: NextFunction): void {
     .catch((err) => next(err));
 }
 
-export function create(req: Request, res: Response, next: NextFunction): void {
-  User.create(req.body)
-    .then((user) => res.json(user))
-    .catch((err) => next(err));
+export async function create(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const userData = req.body;
+  const hashedPassword = await bcrypt.hash(userData.password, 10);
+  userData.password = hashedPassword;
+  try{
+    const user = await User.create(userData);
+    res.json(user);
+  } catch(err){
+    next(err);
+  }
 }
 
 export function show(req: Request, res: Response, next: NextFunction): void {

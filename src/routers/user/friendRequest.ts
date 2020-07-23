@@ -4,7 +4,12 @@ import { body, validationResult } from "express-validator";
 const router = Router();
 
 router.get("/:userId/requests/", friendRequest.index);
-router.post("/:userId/requests/", validateUserData(), validate, friendRequest.create);
+router.post(
+  "/:userId/requests/",
+  validateUserData(),
+  validate,
+  friendRequest.create
+);
 router.delete("/:userId/requests/:id", friendRequest.destroy);
 router.put("/:userId/requests/:id", friendRequest.accept);
 

@@ -37,6 +37,7 @@ export async function creatUser(): Promise<IUser> {
   count++;
   return await User.create({
     name: "jone " + count,
+    password: "pass",
     email: "jone@gmail.com" + count,
     photoUrl: "url.com/photo.jpg",
     birthday: "20-12-2020",

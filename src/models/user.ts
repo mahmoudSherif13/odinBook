@@ -11,6 +11,7 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
+    password: String,
     photoUrl: String,
     birthday: String,
     friends: [
@@ -38,6 +39,7 @@ userSchema.virtual("url").get(function () {
 export interface IUser extends Document {
   name: string;
   email: string;
+  password: string;
   photoUrl?: string;
   birthday?: string;
   friends?: IUser[] | string[];
