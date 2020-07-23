@@ -42,14 +42,16 @@ export function show(req: Request, res: Response, next: NextFunction): void {
 export async function update(req: Request, res: Response, next: NextFunction) {
   try {
     const userData = req.body;
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    userData.password = hashedPassword;
+    if (userData.password) {
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      userData.password = hashedPassword;
+    }
     const user = await User.findByIdAndUpdate(req.params.id, userData);
     if (user) {
       res.json(user);
     }
     res.status(404).json(userNotFounded);
-  } catch(err){
+  } catch (err) {
     next(err);
   }
 }
