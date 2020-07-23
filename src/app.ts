@@ -8,7 +8,7 @@ import dotenv from "dotenv";
 import router from "./router";
 import passport from "passport";
 import "./dbConfig";
-require('./passport');
+require("./passport");
 
 dotenv.config();
 const app = express();

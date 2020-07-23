@@ -10,14 +10,18 @@ export function index(req: Request, res: Response, next: NextFunction): void {
     .catch((err) => next(err));
 }
 
-export async function create(req: Request, res: Response, next: NextFunction): Promise<void> {
+export async function create(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   const userData = req.body;
   const hashedPassword = await bcrypt.hash(userData.password, 10);
   userData.password = hashedPassword;
-  try{
+  try {
     const user = await User.create(userData);
     res.json(user);
-  } catch(err){
+  } catch (err) {
     next(err);
   }
 }

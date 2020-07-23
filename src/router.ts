@@ -11,9 +11,9 @@ router.use("/posts/", postRouter);
 router.use("/", auth);
 
 router.use((err, req: Request, res: Response) => {
-    if (err) {
-        res.status(500).json(err);
-    }
+  if (err) {
+    res.status(500).json(err);
+  }
 });
 
 export default router;

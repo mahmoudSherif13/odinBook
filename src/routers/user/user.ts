@@ -7,11 +7,29 @@ import friendsRouter from "./friends";
 import passport from "passport";
 const router = Router();
 
-router.get("/", passport.authenticate('jwt', {session: false}), userController.index);
+router.get(
+  "/",
+  passport.authenticate("jwt", { session: false }),
+  userController.index
+);
 router.post("/", validateUserData(), validate, userController.create);
-router.get("/:id",passport.authenticate('jwt', {session: false}), userController.show);
-router.put("/:id",passport.authenticate('jwt', {session: false}), validateUserData(), validate, userController.update);
-router.delete("/:id",passport.authenticate('jwt', {session: false}), userController.destroy);
+router.get(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  userController.show
+);
+router.put(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  validateUserData(),
+  validate,
+  userController.update
+);
+router.delete(
+  "/:id",
+  passport.authenticate("jwt", { session: false }),
+  userController.destroy
+);
 router.use("/", friendRequestRouter);
 router.use("/", friendsRouter);
 
