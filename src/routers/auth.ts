@@ -8,7 +8,7 @@ dotenv.config();
 const router = express.Router();
 
 router.post("/login", (req, res, next) => {
-  passport.authenticate("local", { session: false }, (err, user, info) => {
+  passport.authenticate("local", { session: false }, (err, user) => {
     if (err || !user) {
       return res.status(400).json({
         message: "Something is not right",
@@ -23,7 +23,6 @@ router.post("/login", (req, res, next) => {
 
       jwt.sign(JSON.stringify(user), process.env.JWT, (err, token) => {
         if (err) {
-          console.log(err);
           return res.status(404).json(err);
         }
         return res.json({ user, token });

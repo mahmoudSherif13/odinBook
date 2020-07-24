@@ -7,40 +7,30 @@ import friendsRouter from "./friends";
 import passport from "passport";
 const router = Router();
 
-router.get(
-  "/",
-  passport.authenticate("jwt", { session: false }),
-  userController.index
-);
-router.post("/", validateUserData(), validate, userController.create);
-router.get(
-  "/:id",
-  passport.authenticate("jwt", { session: false }),
-  userController.show
-);
+const authenticate = [passport.authenticate("jwt", { session: false })];
+const authorize = [];
+const validateUserData = [
+  body(UserNameing.NAME).trim().escape(),
+  body(UserNameing.EMAIL).isEmail().escape(),
+  body(UserNameing.BIRTHDAY).escape(),
+  body(UserNameing.PHOTO_URL).optional().isURL().escape(),
+];
+
+router.get("/", authenticate, userController.index);
+router.post("/", validateUserData, validate, userController.create);
+router.get("/:id", authenticate, userController.show);
 router.put(
   "/:id",
-  passport.authenticate("jwt", { session: false }),
-  validateUserData(),
+  authenticate,
+  validateUserData,
+  authorizeOnlyUser,
   validate,
   userController.update
 );
-router.delete(
-  "/:id",
-  passport.authenticate("jwt", { session: false }),
-  userController.destroy
-);
+router.delete("/:id", authenticate, authorize, userController.destroy);
+
 router.use("/", friendRequestRouter);
 router.use("/", friendsRouter);
-
-function validateUserData() {
-  return [
-    body(UserNameing.NAME).trim().escape(),
-    body(UserNameing.EMAIL).isEmail().escape(),
-    body(UserNameing.BIRTHDAY).escape(),
-    body(UserNameing.PHOTO_URL).optional().isURL().escape(),
-  ];
-}
 
 function validate(req: Request, res: Response, next: NextFunction) {
   const errors = validationResult(req);
@@ -53,6 +43,13 @@ function validate(req: Request, res: Response, next: NextFunction) {
   return res.status(422).json({
     errors: extractedErrors,
   });
+}
+
+function authorizeOnlyUser(req, res: Response, next) {
+  if (req.user._id.toString() !== req.params.id) {
+    return res.sendStatus(401);
+  }
+  next();
 }
 
 export default router;
