@@ -10,8 +10,14 @@ const router = Router();
 const authenticate = [passport.authenticate("jwt", { session: false })];
 const authorize = [];
 const validateUserData = [
-  body(UserNameing.NAME).trim().escape(),
-  body(UserNameing.EMAIL).isEmail().escape(),
+  body(UserNameing.NAME).exists().withMessage("messing name").trim().escape(),
+  body(UserNameing.EMAIL)
+    .exists()
+    .withMessage("messing email")
+    .isEmail()
+    .withMessage("invalid email")
+    .escape(),
+  body(UserNameing.PASSWORD).exists().withMessage("messing password"),
   body(UserNameing.BIRTHDAY).escape(),
   body(UserNameing.PHOTO_URL).optional().isURL().escape(),
 ];
@@ -38,7 +44,7 @@ function validate(req: Request, res: Response, next: NextFunction) {
     return next();
   }
   const extractedErrors = [];
-  errors.array().map((err) => extractedErrors.push({ [err.param]: err.msg }));
+  errors.array().map((err) => extractedErrors.push(err.msg));
 
   return res.status(422).json({
     errors: extractedErrors,

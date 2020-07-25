@@ -58,6 +58,7 @@ export const enum UserNameing {
   EMAIL = "email",
   BIRTHDAY = "birthday",
   PHOTO_URL = "photoUrl",
+  PASSWORD = "password",
 }
 
 export default model<IUser>("User", userSchema);
