@@ -1,7 +1,6 @@
 import { Router, Response, Request } from "express";
 import userRouter from "./routers/user/user";
 import postRouter from "./routers/post";
-import passport from "passport";
 import auth from "./routers/auth";
 
 const router = Router();

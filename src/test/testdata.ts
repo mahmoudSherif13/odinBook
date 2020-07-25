@@ -11,12 +11,12 @@ export const users = [
   {
     name: "jojo",
     email: "jojo@jojo_cop.com",
-    password: "pass",
+    password: "passo",
   },
   {
     name: "reka",
     email: "reka@anne.com",
-    password: "pass",
+    password: "good pass",
   },
 ];
 
@@ -30,6 +30,7 @@ export const posts = [
 export const updatedUser = {
   name: "jone",
   email: "jone@gmail.com",
+  pass: "passs",
   photoUrl: "url.com/photo.jpg",
   birthday: "20-12-2020",
 };
