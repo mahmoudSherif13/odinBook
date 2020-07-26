@@ -1,5 +1,5 @@
 import { Router, Response, Request } from "express";
-import userRouter from "./routers/user/user";
+import userRouter from "./routers/user";
 import postRouter from "./routers/post";
 import auth from "./routers/auth";
 

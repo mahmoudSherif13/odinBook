@@ -1,52 +1,59 @@
 import Post from "../models/post";
-import { Request, Response, NextFunction } from "express";
-import { postNotFounded } from "../errorCodes";
+import { controllerFunction } from "./helper";
 
-export function index(req: Request, res: Response, next: NextFunction): void {
-  Post.find()
-    .exec()
-    .then((posts) => res.json(posts))
-    .catch((err) => next(err));
-}
+export const index: controllerFunction = async (req, res, next) => {
+  try {
+    const postsList = await Post.find().exec();
+    if (postsList?.length) {
+      res.json(postsList);
+    }
+    res.sendStatus(404);
+  } catch (err) {
+    next(err);
+  }
+};
 
-export function create(req: Request, res: Response, next: NextFunction): void {
-  Post.create(req.body)
-    .then((post) => res.json(post))
-    .catch((err) => next(err));
-}
+export const create: controllerFunction = async (req, res, next) => {
+  try {
+    const post = await Post.create(req.body);
+    res.json(post);
+  } catch (err) {
+    next(err);
+  }
+};
 
-export function show(req: Request, res: Response, next: NextFunction): void {
-  Post.findById(req.params.id)
-    .exec()
-    .then((post) => {
-      if (post) {
-        res.json(post);
-      }
-      res.status(404).json(postNotFounded);
-    })
-    .catch((err) => next(err));
-}
+export const show: controllerFunction = async (req, res, next) => {
+  try {
+    const post = await Post.findById(req.params.id).exec();
+    if (post) {
+      res.json(post);
+    }
+    res.sendStatus(404);
+  } catch (err) {
+    next(err);
+  }
+};
 
-export function update(req: Request, res: Response, next: NextFunction): void {
-  Post.findByIdAndUpdate(req.params.id, req.body)
-    .exec()
-    .then((post) => {
-      if (post) {
-        res.json(post);
-      }
-      res.status(404).json(postNotFounded);
-    })
-    .catch((err) => next(err));
-}
+export const update: controllerFunction = async (req, res, next) => {
+  try {
+    const post = await Post.findByIdAndUpdate(req.params.id, req.body).exec();
+    if (post) {
+      res.json(post);
+    }
+    res.sendStatus(404);
+  } catch (err) {
+    next(err);
+  }
+};
 
-export function destroy(req: Request, res: Response, next: NextFunction): void {
-  Post.findByIdAndDelete(req.params.id)
-    .exec()
-    .then((post) => {
-      if (post) {
-        res.json(post);
-      }
-      res.status(404).json(postNotFounded);
-    })
-    .catch((err) => next(err));
-}
+export const destroy: controllerFunction = async (req, res, next) => {
+  try {
+    const post = await Post.findByIdAndDelete(req.params.id).exec();
+    if (post) {
+      res.json(post);
+    }
+    res.sendStatus(404);
+  } catch (err) {
+    next(err);
+  }
+};

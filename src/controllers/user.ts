@@ -1,6 +1,6 @@
-import User from "../../models/user";
+import User from "../models/user";
 import { Request, Response, NextFunction } from "express";
-import { userNotFounded } from "../../errorCodes";
+import { userNotFounded } from "../errorCodes";
 import * as bcrypt from "bcryptjs";
 
 export async function index(

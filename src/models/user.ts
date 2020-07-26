@@ -53,7 +53,7 @@ export interface IUser extends Document {
   url?: string;
 }
 
-export const enum UserNameing {
+export const enum UserNaming {
   NAME = "name",
   EMAIL = "email",
   BIRTHDAY = "birthday",

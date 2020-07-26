@@ -1,5 +1,5 @@
 import { Router, NextFunction, Response, Request } from "express";
-import * as friends from "../../controllers/user/friends";
+import * as friends from "../controllers/friends";
 import { body, validationResult } from "express-validator";
 const router = Router();
 

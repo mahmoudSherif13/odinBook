@@ -35,7 +35,7 @@ postSchema.virtual("baseUrl").get(function () {
 });
 
 export interface PostType extends Document {
-  user: IUser;
+  user: IUser | string;
   type: postType;
   test: string;
   likes: IUser[];
