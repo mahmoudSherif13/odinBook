@@ -89,18 +89,6 @@ paths:
           description: "invalid data"
           
   /posts:
-    get:
-      tags: 
-      - post
-      summary: "get all posts"
-      security: 
-      - bearerAuth: []
-      responses:
-        200:
-          $ref: '#/components/responses/posts'
-        401:
-          $ref: '#/components/responses/unauthorized'
-          
     post:
       tags: 
       - post
@@ -117,6 +105,8 @@ paths:
           $ref: '#/components/responses/post'
         400:
           $ref: '#/components/responses/invalidData'
+        401:
+          $ref: '#/components/responses/unauthorized'
           
   /posts/{id}:
     get:
@@ -137,7 +127,8 @@ paths:
           $ref: '#/components/responses/post'
         404:
           description: post not founded
-    
+        401:
+          $ref: '#/components/responses/unauthorized'
 components:
   
   securitySchemes:
@@ -198,9 +189,12 @@ components:
       enum:
       - "text"
     errors:
-      type: array
-      items:
-        type: string
+      type: object
+      properties:
+        errors:
+          type: array
+          items: 
+            type: string
     # user schemas
     user:
       type: "object"

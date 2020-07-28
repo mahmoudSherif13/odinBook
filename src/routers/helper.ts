@@ -3,6 +3,8 @@ import { NextFunction, Response, Request } from "express";
 import passport from "passport";
 import { body } from "express-validator";
 import User, { UserNaming } from "../models/user";
+import post, { PostNaming, postType } from "../models/post";
+import * as POST_ERRORS from "../errors/post";
 
 export function validate(req: Request, res: Response, next: NextFunction) {
   const errors = validationResult(req);
@@ -23,17 +25,18 @@ export const authenticateUser = [
 export const authorize = [];
 export const validateUserData = [
   body(UserNaming.NAME)
-    .trim()
-    .escape()
     .exists()
     .withMessage("messing name")
+    .bail()
     .isLength({ min: 3 })
     .withMessage("name must be bigger than 3 chars"),
   body(UserNaming.EMAIL)
     .exists()
     .withMessage("messing email")
+    .bail()
     .isEmail()
     .withMessage("invalid email")
+    .bail()
     .custom(async (email) => {
       const user = await User.findOne({ email });
       if (user) {
@@ -42,7 +45,43 @@ export const validateUserData = [
     })
     .withMessage("used email")
     .escape(),
-  body(UserNaming.PASSWORD).exists().withMessage("messing password"),
-  body(UserNaming.BIRTHDAY).optional().escape(),
-  body(UserNaming.PHOTO_URL).optional().isURL().escape(),
+  body(UserNaming.PASSWORD)
+    .exists()
+    .withMessage("messing password")
+    .notEmpty()
+    .withMessage("empty password"),
+  body(UserNaming.BIRTHDAY).optional(),
+  body(UserNaming.PHOTO_URL).optional().isURL().withMessage("invalid url"),
+  validate,
+];
+
+export const validatePostData = [
+  body(PostNaming.USER)
+    .exists()
+    .withMessage(POST_ERRORS.MISSING_USER_ID)
+    .bail()
+    .custom(async (userId) => {
+      const user = await User.findById(userId);
+      if (!user) {
+        return Promise.reject();
+      }
+    })
+    .withMessage(POST_ERRORS.INVALID_USER_ID),
+  body(PostNaming.TYPE)
+    .exists()
+    .withMessage(POST_ERRORS.MISSING_TYPE)
+    .bail()
+    .custom(async (type) => {
+      if (!Object.values(postType).includes(type)) {
+        return Promise.reject();
+      }
+    })
+    .withMessage(POST_ERRORS.INVALID_TYPE),
+  body(PostNaming.TEXT)
+    .exists()
+    .withMessage(POST_ERRORS.MISSING_TEXT)
+    .bail()
+    .notEmpty()
+    .withMessage(POST_ERRORS.EMPTY_TEXT),
+  validate,
 ];

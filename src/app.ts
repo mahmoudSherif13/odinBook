@@ -28,9 +28,9 @@ app.use(function (req, res, next) {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
-  console.log("%%%%%%%%%%%%%%%%%%");
-  console.log(req);
-  console.log("%%%%%%%%%%%%%%%%%%");
+  // console.log("%%%%%%%%%%%%%%%%%%");
+  // console.log(req);
+  // console.log("%%%%%%%%%%%%%%%%%%");
   next();
 });
 

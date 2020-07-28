@@ -41,11 +41,11 @@ export interface PostType extends Document {
   likes: IUser[];
 }
 
-export const enum postType {
+export enum postType {
   text = "text",
 }
 
-export const enum PostNameing {
+export const enum PostNaming {
   USER = "user",
   TYPE = "type",
   TEXT = "text",
