@@ -183,7 +183,10 @@ describe("get user posts", () => {
       .expect(200);
 
     for (let i = 0; i < postList.length; i++) {
-      expectPost(res.body[i], postList[i]);
+      expectPost(res.body[i], {
+        ...postList[i],
+        user: user,
+      });
     }
   });
 

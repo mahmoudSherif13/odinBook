@@ -45,7 +45,9 @@ export const getUserPosts: controllerFunction = async (req, res, next) => {
       res.sendStatus(404);
       return;
     }
-    const posts = await Post.find({ user: req.params.id }).exec();
+    const posts = await Post.find({ user: req.params.id })
+      .populate("user", "name email photoUrl")
+      .exec();
     res.json(posts);
   } catch (err) {
     next(err);

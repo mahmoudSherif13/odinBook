@@ -42,8 +42,8 @@ async function createPost(post, token: string) {
   const res = await request(app)
     .post("/posts/")
     .send(post)
-    .set("Authorization", "Bearer " + token);
-  expect(res);
+    .set("Authorization", "Bearer " + token)
+    .expect(200);
   return res.body;
 }
 
@@ -55,10 +55,18 @@ describe("create", () => {
       user: user._id,
     };
     const addedPost = await createPost(post, token);
-    expectPost(addedPost, post);
+    expectPost(addedPost, {
+      ...post,
+      user: user,
+    });
     // check db
-    const dbPost = await Post.findById(addedPost._id).exec();
-    expectPost(dbPost, post);
+    const dbPost = await Post.findById(addedPost._id)
+      .populate("user", "name email photoUrl")
+      .exec();
+    expectPost(dbPost, {
+      ...post,
+      user: user,
+    });
   });
 
   it("create post without auth", async () => {
@@ -130,7 +138,10 @@ describe("show", () => {
       .get("/posts/" + post._id)
       .set("Authorization", "Bearer " + token)
       .expect(200);
-    expectPost(res.body, post);
+    expectPost(res.body, {
+      ...post,
+      user: user,
+    });
   });
 
   it("show invalid id", async () => {

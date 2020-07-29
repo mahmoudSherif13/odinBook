@@ -12,7 +12,11 @@ export function expectUser(reserved, expected): void {
 
 export function expectPost(reserved, expected): void {
   expect(reserved._id).toBeDefined();
-  expect(reserved.user.toString()).toEqual(expected.user.toString());
+  expect(reserved.user.name).toEqual(expected.user.name);
+  expect(reserved.user.email).toEqual(expected.user.email);
+  if (expected.user.photoUrl) {
+    expect(reserved.user.photoUrl).toEqual(expected.user.photoUrl);
+  }
   expect(reserved.type).toEqual(expected.type);
   expect(reserved.data).toEqual(expected.data);
   if (expected.likes) {

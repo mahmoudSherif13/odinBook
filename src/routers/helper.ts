@@ -3,8 +3,9 @@ import { NextFunction, Response, Request } from "express";
 import passport from "passport";
 import { body } from "express-validator";
 import User, { UserNaming } from "../models/user";
-import post, { PostNaming, postType } from "../models/post";
+import Post, { PostNaming, postType } from "../models/post";
 import * as POST_ERRORS from "../errors/post";
+import { CommentNaming, commentType } from "src/models/comment";
 
 export function validate(req: Request, res: Response, next: NextFunction) {
   const errors = validationResult(req);
@@ -78,6 +79,48 @@ export const validatePostData = [
     })
     .withMessage(POST_ERRORS.INVALID_TYPE),
   body(PostNaming.TEXT)
+    .exists()
+    .withMessage(POST_ERRORS.MISSING_TEXT)
+    .bail()
+    .notEmpty()
+    .withMessage(POST_ERRORS.EMPTY_TEXT),
+  validate,
+];
+
+export const validateCommentData = [
+  body(CommentNaming.USER)
+    .exists()
+    .withMessage(POST_ERRORS.MISSING_USER_ID)
+    .bail()
+    .custom(async (userId) => {
+      const user = await User.findById(userId);
+      if (!user) {
+        return Promise.reject();
+      }
+    })
+    .withMessage(POST_ERRORS.INVALID_USER_ID),
+  body(CommentNaming.POST)
+    .exists()
+    .withMessage("missing post Id")
+    .bail()
+    .custom(async (postId) => {
+      const post = await Post.findById(postId);
+      if (!post) {
+        return Promise.reject();
+      }
+    })
+    .withMessage("invalid post id"),
+  body(CommentNaming.TYPE)
+    .exists()
+    .withMessage(POST_ERRORS.MISSING_TYPE)
+    .bail()
+    .custom(async (type) => {
+      if (!Object.values(commentType).includes(type)) {
+        return Promise.reject();
+      }
+    })
+    .withMessage(POST_ERRORS.INVALID_TYPE),
+  body(CommentNaming.TEXT)
     .exists()
     .withMessage(POST_ERRORS.MISSING_TEXT)
     .bail()
