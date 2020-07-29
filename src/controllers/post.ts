@@ -40,6 +40,17 @@ export const show: controllerFunction = async (req, res, next) => {
   }
 };
 
+export const addLike: controllerFunction = async (req, res, next) => {
+  try {
+    await Post.findByIdAndUpdate(req.params.postId, {
+      $addToSet: { likes: req.body.user },
+    });
+    res.sendStatus(200);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getPostComments: controllerFunction = async (req, res, next) => {
   try {
     const postId = await Post.findById(req.params.postId).exec();

@@ -11,4 +11,5 @@ router.get(
   authenticateUser,
   postController.getPostComments
 );
+router.post("/:postId/likes", authenticateUser, postController.addLike);
 export default router;
