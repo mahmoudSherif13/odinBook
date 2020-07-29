@@ -1,7 +1,7 @@
 import request from "supertest";
 import app from "../app";
 import User from "../models/user";
-import { users, invalidId } from "./testdata";
+import { invalidId } from "./testdata";
 import { expectUser, expectPost } from "./helper";
 import mongoose from "mongoose";
 import { connect } from "../mongoConfigTesting";
@@ -98,7 +98,7 @@ describe("show", () => {
   });
 
   it("not auth", async () => {
-    const user = (await request(app).post("/users/").send(users[0]).expect(200))
+    const user = (await request(app).post("/users/").send(userData).expect(200))
       .body;
 
     await request(app)
