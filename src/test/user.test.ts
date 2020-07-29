@@ -3,7 +3,8 @@ import app from "../app";
 import User from "../models/user";
 import { users, invalidId } from "./testdata";
 import { expectUser, expectPost } from "./helper";
-import "../mongoConfigTesting";
+import mongoose from "mongoose";
+import { connect } from "../mongoConfigTesting";
 
 const userData = {
   name: "jone",
@@ -17,6 +18,12 @@ const postData = {
   text: "a very boring post",
   user: "",
 };
+
+beforeAll(connect);
+
+afterAll(() => {
+  mongoose.connection.close();
+});
 
 afterEach(async () => {
   await User.deleteMany({});

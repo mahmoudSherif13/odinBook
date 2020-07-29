@@ -30,8 +30,9 @@ export async function show(
     const user = await User.findById(req.params.id);
     if (user) {
       res.json(user);
+    } else {
+      res.status(404).json(userNotFounded);
     }
-    res.status(404).json(userNotFounded);
   } catch (err) {
     next(err);
   }

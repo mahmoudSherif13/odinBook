@@ -6,8 +6,11 @@ import compression from "compression";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import router from "./router";
-import "./dbConfig";
 require("./passport");
+
+if (process.env.NODE_ENV !== "testing") {
+  require("./dbConfig");
+}
 
 dotenv.config();
 const app = express();
@@ -28,9 +31,6 @@ app.use(function (req, res, next) {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
-  // console.log("%%%%%%%%%%%%%%%%%%");
-  // console.log(req);
-  // console.log("%%%%%%%%%%%%%%%%%%");
   next();
 });
 

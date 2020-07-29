@@ -1,10 +1,10 @@
 import request from "supertest";
 import app from "../app";
-import User from "../models/user";
+import User, { IUser } from "../models/user";
 import Post from "../models/post";
 import { expectPost } from "./helper";
 import * as POST_ERRORS from "../errors/post";
-import "../mongoConfigTesting";
+import { connect } from "../mongoConfigTesting";
 import { invalidId } from "./testdata";
 
 const postData = {
@@ -18,35 +18,47 @@ const userData = {
   password: "123456",
 };
 
+beforeAll(connect);
+
 afterEach(async () => {
   await Post.deleteMany({});
   await User.deleteMany({});
 });
 
+async function getLoginData(): Promise<{ user: IUser; token: string }> {
+  const user = (await request(app).post("/users/").send(userData)).body;
+  const token = (
+    await request(app)
+      .post("/login/")
+      .send({ email: userData.email, password: userData.password })
+  ).body.token;
+  return {
+    user,
+    token,
+  };
+}
+
+async function createPost(post, token: string) {
+  const res = await request(app)
+    .post("/posts/")
+    .send(post)
+    .set("Authorization", "Bearer " + token);
+  expect(res);
+  return res.body;
+}
+
 describe("create", () => {
   it("create valid post", async () => {
-    const user = await (
-      await request(app).post("/users/").send(userData).expect(200)
-    ).body;
-    const token = (
-      await request(app)
-        .post("/login/")
-        .send({ email: userData.email, password: userData.password })
-        .expect(200)
-    ).body.token;
-    const popPost = {
+    const { user, token } = await getLoginData();
+    const post = {
       ...postData,
       user: user._id,
     };
-    const res = await request(app)
-      .post("/posts/")
-      .send(popPost)
-      .set("Authorization", "Bearer " + token)
-      .expect(200);
-    expectPost(res.body, popPost);
+    const addedPost = await createPost(post, token);
+    expectPost(addedPost, post);
     // check db
-    const post = await Post.findById(res.body._id).exec();
-    expectPost(post, popPost);
+    const dbPost = await Post.findById(addedPost._id).exec();
+    expectPost(dbPost, post);
   });
 
   it("create post without auth", async () => {
@@ -54,13 +66,7 @@ describe("create", () => {
   });
 
   it("create post without user", async () => {
-    await request(app).post("/users/").send(userData).expect(200);
-    const token = (
-      await request(app)
-        .post("/login/")
-        .send({ email: userData.email, password: userData.password })
-        .expect(200)
-    ).body.token;
+    const token = (await getLoginData()).token;
     await request(app)
       .post("/posts/")
       .send({
@@ -73,15 +79,7 @@ describe("create", () => {
   });
 
   it("create post without type and text", async () => {
-    const user = await (
-      await request(app).post("/users/").send(userData).expect(200)
-    ).body;
-    const token = (
-      await request(app)
-        .post("/login/")
-        .send({ email: userData.email, password: userData.password })
-        .expect(200)
-    ).body.token;
+    const { user, token } = await getLoginData();
     await request(app)
       .post("/posts/")
       .send({
@@ -98,15 +96,7 @@ describe("create", () => {
   });
 
   it("create post with invalid type and text", async () => {
-    const user = await (
-      await request(app).post("/users/").send(userData).expect(200)
-    ).body;
-    const token = (
-      await request(app)
-        .post("/login/")
-        .send({ email: userData.email, password: userData.password })
-        .expect(200)
-    ).body.token;
+    const { user, token } = await getLoginData();
     await request(app)
       .post("/posts/")
       .send({
@@ -125,16 +115,7 @@ describe("create", () => {
 
 describe("show", () => {
   it("show post", async () => {
-    const user = await (
-      await request(app).post("/users/").send(userData).expect(200)
-    ).body;
-    const token = (
-      await request(app)
-        .post("/login/")
-        .send({ email: userData.email, password: userData.password })
-        .expect(200)
-    ).body.token;
-
+    const { user, token } = await getLoginData();
     const post = (
       await request(app)
         .post("/posts/")
@@ -153,13 +134,7 @@ describe("show", () => {
   });
 
   it("show invalid id", async () => {
-    await (await request(app).post("/users/").send(userData).expect(200)).body;
-    const token = (
-      await request(app)
-        .post("/login/")
-        .send({ email: userData.email, password: userData.password })
-        .expect(200)
-    ).body.token;
+    const token = (await getLoginData()).token;
     await request(app)
       .get("/posts/" + invalidId)
       .set("Authorization", "Bearer " + token)
@@ -167,16 +142,7 @@ describe("show", () => {
   });
 
   it("show unAuthorized", async () => {
-    const user = await (
-      await request(app).post("/users/").send(userData).expect(200)
-    ).body;
-
-    const token = (
-      await request(app)
-        .post("/login/")
-        .send({ email: userData.email, password: userData.password })
-        .expect(200)
-    ).body.token;
+    const { user, token } = await getLoginData();
 
     const post = (
       await request(app)

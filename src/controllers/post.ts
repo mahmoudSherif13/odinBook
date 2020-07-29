@@ -15,8 +15,9 @@ export const show: controllerFunction = async (req, res, next) => {
     const post = await Post.findById(req.params.postId).exec();
     if (post) {
       res.json(post);
+    } else {
+      res.sendStatus(404);
     }
-    res.sendStatus(404);
   } catch (err) {
     next(err);
   }
