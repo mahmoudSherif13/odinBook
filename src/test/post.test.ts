@@ -171,3 +171,52 @@ describe("show", () => {
       .expect(401);
   });
 });
+
+describe("post likes", () => {
+  it("add like", async () => {
+    const { user, token } = await getLoginData();
+    const post = await createPost(
+      {
+        ...postData,
+        user: user._id,
+      },
+      token
+    );
+
+    await request(app)
+      .post("/posts/" + post._id + "/likes/")
+      .send({ user: user._id })
+      .set("Authorization", "Bearer " + token)
+      .expect(200);
+
+    const dbPost = await Post.findById(post._id, "likes").exec();
+    expect(dbPost.likes).toHaveLength(1);
+    expect(dbPost.likes[0].toString()).toEqual(user._id.toString());
+  });
+  it("add the same like", async () => {
+    const { user, token } = await getLoginData();
+    const post = await createPost(
+      {
+        ...postData,
+        user: user._id,
+      },
+      token
+    );
+
+    await request(app)
+      .post("/posts/" + post._id + "/likes/")
+      .send({ user: user._id })
+      .set("Authorization", "Bearer " + token)
+      .expect(200);
+
+    await request(app)
+      .post("/posts/" + post._id + "/likes/")
+      .send({ user: user._id })
+      .set("Authorization", "Bearer " + token)
+      .expect(200);
+
+    const dbPost = await Post.findById(post._id, "likes").exec();
+    expect(dbPost.likes).toHaveLength(1);
+    expect(dbPost.likes[0].toString()).toEqual(user._id.toString());
+  });
+});
