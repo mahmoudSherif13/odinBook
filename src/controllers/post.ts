@@ -1,5 +1,5 @@
 import Post from "../models/post";
-import Comment, { commentType } from "../models/comment";
+import Comment from "../models/comment";
 import { controllerFunction } from "./helper";
 
 export const index: controllerFunction = async (req, res, next) => {

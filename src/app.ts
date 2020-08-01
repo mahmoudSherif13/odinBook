@@ -6,10 +6,9 @@ import compression from "compression";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import router from "./router";
-require("./passport");
-
+import "./passport";
 if (process.env.NODE_ENV !== "testing") {
-  require("./dbConfig");
+  require("./dbConfigs/production");
 }
 
 dotenv.config();

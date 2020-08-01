@@ -1,13 +1,13 @@
 import request from "supertest";
 import app from "../app";
 import User from "../models/user";
-import { invalidId } from "./testdata";
+import { invalidId } from "./testData";
 import { expectUser, expectPost } from "./helper";
 import mongoose from "mongoose";
-import { connect } from "../mongoConfigTesting";
+import { connect } from "../dbConfigs/testing";
 
 const userData = {
-  name: "jone",
+  name: "jon",
   email: "jone@gmail.com",
   password: "pass",
   photoUrl: "https://www.url.com/photo.jpg",

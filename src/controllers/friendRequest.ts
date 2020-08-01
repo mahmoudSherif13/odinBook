@@ -1,32 +1,41 @@
 import User from "../models/user";
 import { Request, Response, NextFunction } from "express";
+import { controllerFunction, checkUserId } from "./helper";
 
-export async function index(req: Request, res: Response, next: NextFunction) {
+export const index: controllerFunction = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.userId)
       .populate("friendsRequests", "name email photoUrl")
       .exec();
-    if (user?.friendsRequests?.length > 0) {
+    if (user) {
       res.json(user.friendsRequests);
-    } else {
-      res.json({ err: "no requests" });
+      return;
     }
+    res.sendStatus(404);
   } catch (err) {
     next(err);
   }
-}
+};
 
-export async function create(req: Request, res: Response, next: NextFunction) {
+export const create: controllerFunction = async (req, res, next) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.userId, {
-      $addToSet: { friendsRequests: req.body.userId },
+    if (
+      !(await checkUserId(req.params.userId)) ||
+      !(await checkUserId(req.body.user))
+    ) {
+      res.sendStatus(404);
+      return;
+    }
+
+    await User.findByIdAndUpdate(req.params.userId, {
+      $addToSet: { friendsRequests: req.body.user },
     }).exec();
 
-    res.json(user);
+    res.json({ message: "OK" });
   } catch (err) {
     next(err);
   }
-}
+};
 
 export async function destroy(req: Request, res: Response, next: NextFunction) {
   try {

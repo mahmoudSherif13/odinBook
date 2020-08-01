@@ -27,7 +27,7 @@ export async function show(
   next: NextFunction
 ): Promise<void> {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.userId);
     if (user) {
       res.json(user);
     } else {
@@ -40,12 +40,12 @@ export async function show(
 
 export const getUserPosts: controllerFunction = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id).exec();
+    const user = await User.findById(req.params.userId).exec();
     if (!user) {
       res.sendStatus(404);
       return;
     }
-    const posts = await Post.find({ user: req.params.id })
+    const posts = await Post.find({ user: req.params.userId })
       .populate("user", "name email photoUrl")
       .exec();
     res.json(posts);

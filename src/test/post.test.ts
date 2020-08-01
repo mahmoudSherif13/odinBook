@@ -3,9 +3,9 @@ import app from "../app";
 import User, { IUser } from "../models/user";
 import Post from "../models/post";
 import { expectPost } from "./helper";
-import * as POST_ERRORS from "../errors/post";
-import { connect } from "../mongoConfigTesting";
-import { invalidId } from "./testdata";
+import * as POST_ERRORS from "../errorCodes";
+import { connect } from "../dbConfigs/testing";
+import { invalidId } from "./testData";
 
 const postData = {
   type: "text",
@@ -13,7 +13,7 @@ const postData = {
   user: "",
 };
 const userData = {
-  name: "poor jone",
+  name: "poor jon",
   email: "jone@lol.xd",
   password: "123456",
 };

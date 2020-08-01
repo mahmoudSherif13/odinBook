@@ -4,10 +4,10 @@ import passport from "passport";
 import { body } from "express-validator";
 import User, { UserNaming } from "../models/user";
 import Post, { PostNaming, postType } from "../models/post";
-import * as POST_ERRORS from "../errors/post";
+import * as POST_ERRORS from "../errorCodes";
 import { CommentNaming, commentType } from "../models/comment";
 
-export function validate(req: Request, res: Response, next: NextFunction) {
+function validate(req: Request, res: Response, next: NextFunction) {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
     return next();
