@@ -1,19 +1,13 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.0
-  title: title
-  description: description
-  termsOfService: terms
+  version: 2.0.0
+  title: odinBook
+  description: facebook clone
   contact:
     name: odinBook
-  license:
-    name: MIT
-    url: http://opensource.org/licenses/MIT
-
-tags:
-- name: users
-- name: post
-- name: auth
+servers:
+- url: https://cool-odin-book.herokuapp.com
+  description: Development server
 paths:
   /users:
     post:
@@ -72,6 +66,95 @@ paths:
         404:
           description: user not founded
 
+  /friends:
+    get:
+      tags: 
+      - friends
+      summary: "get user friends"
+      security: 
+      - bearerAuth: []
+      responses:
+        200:
+          $ref: "#/components/responses/simplifiedUsers"
+        401:
+          $ref: "#/components/responses/unauthorized"
+
+  /friends/requests:
+    get:
+      tags: 
+      - friends
+      summary: "get user friend requests"
+      security: 
+      - bearerAuth: []
+      responses:
+        200:
+          $ref: "#/components/responses/simplifiedUsers"
+        401:
+          $ref: "#/components/responses/unauthorized"
+  
+  /friends/requests/{userId}:
+    put:
+      tags:
+      - friends
+      summary: "respond to friend request"
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                response:
+                  type: string
+                  enum:
+                  - accept
+                  - reject
+      responses:
+        200:
+          description: "OK"
+        401:
+          $ref: "#/components/responses/unauthorized"
+      
+    
+  /friends/sentRequests:
+    get:
+      tags: 
+      - friends
+      summary: "get user sent friend requests"
+      security: 
+      - bearerAuth: []
+      responses:
+        200:
+          $ref: "#/components/responses/simplifiedUsers"
+        401:
+          $ref: "#/components/responses/unauthorized"
+    post:
+      tags:
+        - friends
+      summary: "sent a new friend request to user"
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        200:
+          description: "OK"
+        401:
+          $ref: "#/components/responses/unauthorized"
+
   /login:
     post:
       tags: 
@@ -108,6 +191,18 @@ paths:
         401:
           $ref: '#/components/responses/unauthorized'
           
+    get:
+      tags:
+      - post 
+      summary: get all posts
+      security: 
+      - bearerAuth: []
+      responses:
+        200:
+          $ref: '#/components/responses/posts'
+        401:
+          $ref: '#/components/responses/unauthorized'
+          
   /posts/{id}:
     get:
       tags: 
@@ -129,14 +224,84 @@ paths:
           description: post not founded
         401:
           $ref: '#/components/responses/unauthorized'
+          
+  /posts/{postId}/comments:
+    get:
+      tags:
+      - post
+      - comment
+      summary: "get all comments on post"
+      security: 
+      - bearerAuth: []
+      parameters: 
+      - in: path
+        name: postId
+        required: true
+        description: post id
+        schema:
+          type: string
+      responses:
+        200:
+          $ref: '#/components/responses/comments'
+        401:
+          $ref: '#/components/responses/unauthorized'
+        404:
+          description: post not founded
+  /posts/{postId}/likes:
+    post:
+      tags:
+      - post
+      - like
+      summary: add like to the post
+      security: 
+        - bearerAuth: []
+      parameters: 
+      - in: path
+        name: postId
+        required: true
+        description: post id
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json: 
+            schema:
+              properties:
+                user:
+                  type: string
+                  description: user id
+                
+      responses:
+        200:
+          description: "like added"
+  /comments:
+    post:
+      tags: 
+      - comment
+      summary: create a new comment
+      security: 
+      - bearerAuth: []
+      requestBody:
+        content:
+          application/json: 
+            schema:
+              $ref: '#/components/schemas/createComment'
+      responses:
+        200:
+          $ref: '#/components/responses/comment'
+        400:
+          $ref: '#/components/responses/invalidData'
+        401:
+          $ref: '#/components/responses/unauthorized'
+          
 components:
   
   securitySchemes:
-     bearerAuth:
+    bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
+      
   responses:
     # errors
     invalidData:
@@ -166,6 +331,16 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/user'
+    
+    simplifiedUsers:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items: 
+              $ref: '#/components/schemas/simplifiedUser'
+    
     # posts
     posts:
       description: OK
@@ -181,10 +356,29 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/post'
+            # posts
+    comments:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/comment'
+    comment:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/comment'
   
   schemas:
     # helpers
     postType:
+      type: string
+      enum:
+      - "text"
+    commentType:
       type: string
       enum:
       - "text"
@@ -216,7 +410,7 @@ components:
           type: "array"
           items:
             type: "string"
-        friendsRequests:
+        friendRequests:
           type: "array"
           items:
             type: "string"
@@ -251,7 +445,7 @@ components:
             type: "string"
         password:
           type: "string"
-    postUser:
+    simplifiedUser:
       type: object
       properties:
         name:
@@ -267,7 +461,7 @@ components:
         _id:
           type: "string"
         user:
-          $ref: '#/components/schemas/postUser'
+          $ref: '#/components/schemas/simplifiedUser'
         type:
           $ref: '#/components/schemas/postType'
         text: 
@@ -277,6 +471,12 @@ components:
           type: "array"
           items:
             type: "string"
+        createdAt:
+          type: "string"
+          format: "date"
+        updatedAt:
+          type: "string"
+          format: "date"
     createPost:
       properties:
         user:
@@ -287,5 +487,42 @@ components:
         text:
           type: "string"
           description: "post text content"
-        
-   
+    # comment schemas
+    comment:
+      type: "object"
+      properties:
+        _id:
+          type: "string"
+        user:
+          $ref: '#/components/schemas/simplifiedUser'
+        post:
+          type: "string"
+          description: "post id"
+        type:
+          $ref: '#/components/schemas/commentType'
+        text: 
+          type: "string"
+          description: "post text content"
+        likes:
+          type: "array"
+          items:
+            type: "string"
+        createdAt:
+          type: "string"
+          format: "date"
+        updatedAt:
+          type: "string"
+          format: "date"
+    createComment:
+     properties:
+        user:
+          type: string
+          description: user id
+        post:
+          type: string
+          description: post id
+        type:
+          $ref: '#/components/schemas/commentType'
+        text:
+          type: "string"
+          description: "comment text content"
