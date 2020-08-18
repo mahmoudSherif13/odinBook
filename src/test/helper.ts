@@ -1,3 +1,9 @@
+import request from "supertest";
+import app from "../app";
+import { IUser } from "../models/user";
+import { IPost } from "../models/post";
+import { v4 as generateUuid } from "uuid";
+
 export function expectUser(reserved, expected): void {
   expect(reserved._id).toBeDefined();
   expect(reserved.name).toEqual(expected.name);
@@ -22,4 +28,39 @@ export function expectPost(reserved, expected): void {
   if (expected.likes) {
     expect(reserved.likes).toEqual(expected.likes);
   }
+}
+
+export async function getLoginData(): Promise<{ user: IUser; token: string }> {
+  const user = await generateUser();
+  const token = (
+    await request(app)
+      .post("/login/")
+      .send({ email: user.email, password: "password" })
+  ).body.token;
+  return {
+    user,
+    token,
+  };
+}
+
+export async function createPost(post, token: string): Promise<IPost> {
+  const res = await request(app)
+    .post("/posts/")
+    .send(post)
+    .set("Authorization", "Bearer " + token)
+    .expect(200);
+  return res.body;
+}
+
+export async function generateUser(update = {}): Promise<IUser> {
+  const gen = Date.now() + generateUuid();
+  const userData = {
+    name: gen,
+    password: "password",
+    email: gen + "@gmail.com",
+    photoUrl: "https://www.url.com/photo.jpg",
+    birthday: "20-12-2020",
+    ...update,
+  };
+  return (await request(app).post("/users/").send(userData)).body;
 }

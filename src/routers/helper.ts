@@ -1,29 +1,31 @@
 import { validationResult } from "express-validator";
-import { NextFunction, Response, Request } from "express";
 import passport from "passport";
 import { body } from "express-validator";
 import User, { UserNaming } from "../models/user";
 import Post, { PostNaming, postType } from "../models/post";
 import * as POST_ERRORS from "../errorCodes";
 import { CommentNaming, commentType } from "../models/comment";
+import { controllerFunction } from "src/controllers/helper";
 
-function validate(req: Request, res: Response, next: NextFunction) {
+const validate: controllerFunction = async (req, res, next) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
-    return next();
+    next();
+    return;
   }
   const extractedErrors = [];
   errors.array().map((err) => extractedErrors.push(err.msg));
 
-  return res.status(400).json({
+  res.status(400).json({
     errors: extractedErrors,
   });
-}
+};
 
 export const authenticateUser = [
   passport.authenticate("jwt", { session: false }),
 ];
 export const authorize = [];
+
 export const validateUserData = [
   body(UserNaming.NAME)
     .exists()
@@ -128,3 +130,21 @@ export const validateCommentData = [
     .withMessage(POST_ERRORS.EMPTY_TEXT),
   validate,
 ];
+
+export const validateUserId: controllerFunction = async (req, res, next) => {
+  const user = await User.findById(req.params.userId).exec();
+  if (!user) {
+    res.sendStatus(404);
+    return;
+  }
+  next();
+};
+
+export const validatePostId: controllerFunction = async (req, res, next) => {
+  const post = await Post.findById(req.params.postId).exec();
+  if (!post) {
+    res.sendStatus(404);
+    return;
+  }
+  next();
+};

@@ -7,6 +7,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import router from "./router";
 import "./passport";
+import { IUser } from "./models/user";
 if (process.env.NODE_ENV !== "testing") {
   require("./dbConfigs/production");
 }

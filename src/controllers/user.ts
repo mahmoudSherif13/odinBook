@@ -1,15 +1,9 @@
 import User from "../models/user";
 import Post from "../models/post";
-import { Request, Response, NextFunction } from "express";
-import { userNotFounded } from "../errorCodes";
 import * as bcrypt from "bcryptjs";
 import { controllerFunction } from "./helper";
 
-export async function create(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
+export const create: controllerFunction = async (req, res, next) => {
   try {
     const userData = req.body;
     const hashedPassword = await bcrypt.hash(userData.password, 10);
@@ -19,36 +13,40 @@ export async function create(
   } catch (err) {
     next(err);
   }
-}
+};
 
-export async function show(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
+export const show: controllerFunction = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (user) {
-      res.json(user);
-    } else {
-      res.status(404).json(userNotFounded);
-    }
+    res.json(user);
   } catch (err) {
     next(err);
   }
-}
+};
 
 export const getUserPosts: controllerFunction = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.userId).exec();
-    if (!user) {
-      res.sendStatus(404);
-      return;
-    }
     const posts = await Post.find({ user: req.params.userId })
       .populate("user", "name email photoUrl")
       .exec();
     res.json(posts);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getUserFeedPost: controllerFunction = async (req, res, next) => {
+  try {
+    const userFriends = (
+      await User.findById(req.params.userId, "friends").exec()
+    ).friends;
+    const postList = await Post.find({ user: { $in: userFriends } })
+      .populate("user", "name email photoUrl")
+      .sort({
+        createdAt: 1,
+      })
+      .exec();
+    res.json(postList);
   } catch (err) {
     next(err);
   }

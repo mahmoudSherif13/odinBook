@@ -20,7 +20,13 @@ const userSchema = new Schema(
         ref: "User",
       },
     ],
-    friendsRequests: [
+    friendRequests: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    sentFriendRequests: [
       {
         type: Schema.Types.ObjectId,
         ref: "User",
@@ -43,14 +49,11 @@ export interface IUser extends Document {
   photoUrl?: string;
   birthday?: string;
   friends?: IUser[] | string[];
-  friendsRequests?: IUser[] | string[];
-
+  friendRequests?: IUser[] | string[];
+  sentFriendRequests?: IUser[] | string[];
   //time stamps
   createdAt?: Date;
   updatedAt?: Date;
-
-  // virtual
-  url?: string;
 }
 
 export const enum UserNaming {
@@ -59,6 +62,9 @@ export const enum UserNaming {
   BIRTHDAY = "birthday",
   PHOTO_URL = "photoUrl",
   PASSWORD = "password",
+  FRIENDS = "friends",
+  FRIEND_REQUESTS = "friendRequests",
+  SENT_FRIEND_REQUESTS = "sentFriendRequests",
 }
 
 export default model<IUser>("User", userSchema);

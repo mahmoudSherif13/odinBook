@@ -1,23 +1,10 @@
 import request from "supertest";
 import app from "../app";
 import User from "../models/user";
-import { invalidId } from "./testData";
+import { invalidId, userData, postData } from "./testData";
 import { expectUser, expectPost } from "./helper";
 import mongoose from "mongoose";
 import { connect } from "../dbConfigs/testing";
-
-const userData = {
-  name: "jon",
-  email: "jone@gmail.com",
-  password: "pass",
-  photoUrl: "https://www.url.com/photo.jpg",
-  birthday: "20-12-2020",
-};
-const postData = {
-  type: "text",
-  text: "a very boring post",
-  user: "",
-};
 
 beforeAll(connect);
 
@@ -30,12 +17,49 @@ afterEach(async () => {
 });
 
 describe("auth", () => {
-  xit("normal", async () => {
+  it("normal", async () => {
     const user = (await request(app).post("/users/").send(userData)).body;
-    const res = await request(app).post("/login/").send({
-      email: userData.email,
-      password: userData.password,
-    });
+    const res = await request(app)
+      .post("/login/")
+      .send({
+        email: userData.email,
+        password: userData.password,
+      })
+      .expect(200);
+    expect(res.body.token).toBeDefined();
+    expectUser(res.body.user, user);
+  });
+
+  it("wrong password", async () => {
+    await request(app).post("/users/").send(userData);
+    await request(app)
+      .post("/login/")
+      .send({
+        email: userData.email,
+        password: "wrong pass",
+      })
+      .expect(400);
+  });
+
+  it("wrong email", async () => {
+    await request(app).post("/users/").send(userData);
+    await request(app)
+      .post("/login/")
+      .send({
+        email: "wrong email",
+        password: userData.password,
+      })
+      .expect(400);
+  });
+
+  it("invalid user", async () => {
+    await request(app)
+      .post("/login/")
+      .send({
+        email: userData.email,
+        password: userData.password,
+      })
+      .expect(400);
   });
 });
 

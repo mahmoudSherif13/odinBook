@@ -34,7 +34,7 @@ postSchema.virtual("baseUrl").get(function () {
   return "/posts/";
 });
 
-export interface PostType extends Document {
+export interface IPost extends Document {
   user: IUser | string;
   type: postType;
   test: string;
@@ -52,4 +52,4 @@ export const enum PostNaming {
   LIKES = "likes",
   BASE_URL = "/posts/",
 }
-export default model<PostType>("Post", postSchema);
+export default model<IPost>("Post", postSchema);

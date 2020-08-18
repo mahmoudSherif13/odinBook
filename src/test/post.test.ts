@@ -1,22 +1,12 @@
 import request from "supertest";
 import app from "../app";
-import User, { IUser } from "../models/user";
+import User from "../models/user";
 import Post from "../models/post";
-import { expectPost } from "./helper";
+import Comment from "../models/comment";
+import { expectPost, getLoginData, createPost } from "./helper";
 import * as POST_ERRORS from "../errorCodes";
 import { connect } from "../dbConfigs/testing";
-import { invalidId } from "./testData";
-
-const postData = {
-  type: "text",
-  text: "a very boring post",
-  user: "",
-};
-const userData = {
-  name: "poor jon",
-  email: "jone@lol.xd",
-  password: "123456",
-};
+import { invalidId, postData, commentData } from "./testData";
 
 beforeAll(connect);
 
@@ -24,28 +14,6 @@ afterEach(async () => {
   await Post.deleteMany({});
   await User.deleteMany({});
 });
-
-async function getLoginData(): Promise<{ user: IUser; token: string }> {
-  const user = (await request(app).post("/users/").send(userData)).body;
-  const token = (
-    await request(app)
-      .post("/login/")
-      .send({ email: userData.email, password: userData.password })
-  ).body.token;
-  return {
-    user,
-    token,
-  };
-}
-
-async function createPost(post, token: string) {
-  const res = await request(app)
-    .post("/posts/")
-    .send(post)
-    .set("Authorization", "Bearer " + token)
-    .expect(200);
-  return res.body;
-}
 
 describe("create", () => {
   it("create valid post", async () => {
@@ -172,7 +140,7 @@ describe("show", () => {
   });
 });
 
-describe("post likes", () => {
+describe("likes", () => {
   it("add like", async () => {
     const { user, token } = await getLoginData();
     const post = await createPost(
@@ -219,4 +187,123 @@ describe("post likes", () => {
     expect(dbPost.likes).toHaveLength(1);
     expect(dbPost.likes[0].toString()).toEqual(user._id.toString());
   });
+});
+
+describe("comments", () => {
+  it("create comment", async () => {
+    const { user, token } = await getLoginData();
+    const post = await createPost(
+      {
+        ...postData,
+        user: user._id,
+      },
+      token
+    );
+    const comment = {
+      ...commentData,
+      user: user._id,
+      post: post._id,
+    };
+    const commentRes = await request(app)
+      .post("/comments/")
+      .send(comment)
+      .set("Authorization", "Bearer " + token)
+      .expect(200);
+    const dbComments = await Comment.find({ post: post._id }, "_id").exec();
+    let founded = false;
+    dbComments.forEach((c) => {
+      if (c._id == commentRes.body._id) {
+        founded = true;
+      }
+    });
+    expect(founded).toEqual(true);
+  });
+
+  it("create comment without post id", async () => {
+    const { user, token } = await getLoginData();
+    const post = await createPost(
+      {
+        ...postData,
+        user: user._id,
+      },
+      token
+    );
+    const comment = {
+      ...commentData,
+      user: user._id,
+    };
+    const commentRes = await request(app)
+      .post("/comments/")
+      .send(comment)
+      .set("Authorization", "Bearer " + token)
+      .expect(400);
+    const dbComments = await Comment.find({ post: post._id }, "_id").exec();
+    let founded = false;
+    dbComments.forEach((c) => {
+      if (c._id == commentRes.body._id) {
+        founded = true;
+      }
+    });
+    expect(founded).toEqual(false);
+  });
+
+  it("create comment without user id", async () => {
+    const { user, token } = await getLoginData();
+    const post = await createPost(
+      {
+        ...postData,
+        user: user._id,
+      },
+      token
+    );
+    const comment = {
+      ...commentData,
+      post: post._id,
+    };
+    const commentRes = await request(app)
+      .post("/comments/")
+      .send(comment)
+      .set("Authorization", "Bearer " + token)
+      .expect(400);
+    const dbComments = await Comment.find({ post: post._id }, "_id").exec();
+    let founded = false;
+    dbComments.forEach((c) => {
+      if (c._id == commentRes.body._id) {
+        founded = true;
+      }
+    });
+    expect(founded).toEqual(false);
+  });
+
+  it("create comment without auth", async () => {
+    const { user, token } = await getLoginData();
+    const post = await createPost(
+      {
+        ...postData,
+        user: user._id,
+      },
+      token
+    );
+    const comment = {
+      ...commentData,
+      post: post._id,
+      user: user._id,
+    };
+    const commentRes = await request(app)
+      .post("/comments/")
+      .send(comment)
+      .expect(401);
+    const dbComments = await Comment.find({ post: post._id }, "_id").exec();
+    let founded = false;
+    dbComments.forEach((c) => {
+      if (c._id == commentRes.body._id) {
+        founded = true;
+      }
+    });
+    expect(founded).toEqual(false);
+  });
+});
+
+describe("get all post comments", () => {
+  it("get post comments", async () => {});
 });

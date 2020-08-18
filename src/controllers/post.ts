@@ -2,6 +2,7 @@ import Post from "../models/post";
 import Comment from "../models/comment";
 import { controllerFunction } from "./helper";
 
+// for testing will be removed in the next version
 export const index: controllerFunction = async (req, res, next) => {
   try {
     const postList = await Post.find({})
@@ -30,11 +31,7 @@ export const show: controllerFunction = async (req, res, next) => {
     const post = await Post.findById(req.params.postId)
       .populate("user", "name email photoUrl")
       .exec();
-    if (post) {
-      res.json(post);
-    } else {
-      res.sendStatus(404);
-    }
+    res.json(post);
   } catch (err) {
     next(err);
   }
@@ -53,15 +50,10 @@ export const addLike: controllerFunction = async (req, res, next) => {
 
 export const getPostComments: controllerFunction = async (req, res, next) => {
   try {
-    const postId = await Post.findById(req.params.postId).exec();
-    if (!postId) {
-      res.sendStatus(404);
-    } else {
-      const commentsList = await Comment.find({ post: req.params.postId })
-        .populate("user", "name email photoUrl")
-        .exec();
-      res.json(commentsList);
-    }
+    const commentsList = await Comment.find({ post: req.params.postId })
+      .populate("user", "name email photoUrl")
+      .exec();
+    res.json(commentsList);
   } catch (err) {
     next(err);
   }
