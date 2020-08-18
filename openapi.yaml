@@ -1,8 +1,15 @@
 openapi: "3.0.0"
 info:
+<<<<<<< HEAD
   version: 0.0.1
   title: odinBook
   description: facebook clone
+=======
+  version: 2.0.0  
+  title: title
+  description: description
+  termsOfService: terms
+>>>>>>> 4312bee6d39e7bf931d4735e045ff0a7281f9d7a
   contact:
     name: odinBook
 servers:
@@ -66,13 +73,21 @@ paths:
         404:
           description: user not founded
 
+<<<<<<< HEAD
   /friends:
     get:
       tags: 
+=======
+  /users/{id}/friends:
+     get:
+      tags: 
+      - users
+>>>>>>> 4312bee6d39e7bf931d4735e045ff0a7281f9d7a
       - friends
       summary: "get user friends"
       security: 
       - bearerAuth: []
+<<<<<<< HEAD
       responses:
         200:
           $ref: "#/components/responses/simplifiedUsers"
@@ -103,12 +118,60 @@ paths:
       - in: path
         name: userId
         required: true
+=======
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: "user id"
+        schema:
+          type: string
+      responses:
+        200:
+          $ref: "#/components/responses/simplifiedUsers"
+        404:
+          description: user not founded
+
+  /users/{id}/friendRequests:
+    get:
+      tags: 
+      - users
+      - friends
+      summary: "get user friendRequests"
+      security: 
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: "user id"
+        schema:
+          type: string
+      responses:
+        200:
+          $ref: "#/components/responses/simplifiedUsers"
+        404:
+          description: user not founded
+    post:
+      tags:
+      - users
+      - friends
+      summary: "create a new friendRequest"
+      security: 
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: "user id"
+>>>>>>> 4312bee6d39e7bf931d4735e045ff0a7281f9d7a
         schema:
           type: string
       requestBody:
         content:
           application/json:
             schema:
+<<<<<<< HEAD
               type: object
               properties:
                 response:
@@ -155,6 +218,18 @@ paths:
         401:
           $ref: "#/components/responses/unauthorized"
 
+=======
+              properties:
+                user:
+                  type: string
+                  description: receiver id
+      responses:
+        200:
+          description: OK
+        404:
+          description: user not founded
+      
+>>>>>>> 4312bee6d39e7bf931d4735e045ff0a7281f9d7a
   /login:
     post:
       tags: 

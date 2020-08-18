@@ -304,6 +304,6 @@ describe("comments", () => {
   });
 });
 
-describe("get all post comments", () => {
-  it("get post comments", async () => {});
-});
+// describe("get all post comments", () => {
+//   it("get post comments", async () => {});
+// });
