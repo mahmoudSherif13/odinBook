@@ -1,21 +1,27 @@
 openapi: "3.0.0"
 info:
-<<<<<<< HEAD
   version: 0.0.1
   title: odinBook
   description: facebook clone
-=======
-  version: 2.0.0  
-  title: title
-  description: description
-  termsOfService: terms
->>>>>>> 4312bee6d39e7bf931d4735e045ff0a7281f9d7a
   contact:
     name: odinBook
 servers:
 - url: https://cool-odin-book.herokuapp.com
   description: Development server
 paths:
+# users
+  /profile:
+    get:
+      tags:
+        - users
+      summary: "get current user data"
+      security: 
+      - bearerAuth: []
+      responses:
+        200:
+          $ref: '#/components/responses/fullUserData'
+        404:
+          description: user not founded
   /users:
     post:
       tags:
@@ -52,45 +58,32 @@ paths:
         404:
           description: user not founded
 
-  /users/{id}/posts:
-     get:
+  /login:
+    post:
       tags: 
       - users
-      - post
-      summary: "get user posts"
-      security: 
-      - bearerAuth: []
-      parameters:
-      - in: path
-        name: id
-        required: true
-        description: "user id"
-        schema:
-          type: string
+      summary: "login user"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginUser'
       responses:
         200:
-          $ref: "#/components/responses/posts"
-        404:
-          description: user not founded
+          $ref: "#/components/responses/login"
+        400:
+          description: "invalid data"
 
-<<<<<<< HEAD
   /friends:
     get:
       tags: 
-=======
-  /users/{id}/friends:
-     get:
-      tags: 
-      - users
->>>>>>> 4312bee6d39e7bf931d4735e045ff0a7281f9d7a
       - friends
       summary: "get user friends"
       security: 
       - bearerAuth: []
-<<<<<<< HEAD
       responses:
         200:
-          $ref: "#/components/responses/simplifiedUsers"
+          $ref: "#/components/responses/basicUsers"
         401:
           $ref: "#/components/responses/unauthorized"
 
@@ -103,99 +96,7 @@ paths:
       - bearerAuth: []
       responses:
         200:
-          $ref: "#/components/responses/simplifiedUsers"
-        401:
-          $ref: "#/components/responses/unauthorized"
-  
-  /friends/requests/{userId}:
-    put:
-      tags:
-      - friends
-      summary: "respond to friend request"
-      security:
-      - bearerAuth: []
-      parameters:
-      - in: path
-        name: userId
-        required: true
-=======
-      parameters:
-      - in: path
-        name: id
-        required: true
-        description: "user id"
-        schema:
-          type: string
-      responses:
-        200:
-          $ref: "#/components/responses/simplifiedUsers"
-        404:
-          description: user not founded
-
-  /users/{id}/friendRequests:
-    get:
-      tags: 
-      - users
-      - friends
-      summary: "get user friendRequests"
-      security: 
-      - bearerAuth: []
-      parameters:
-      - in: path
-        name: id
-        required: true
-        description: "user id"
-        schema:
-          type: string
-      responses:
-        200:
-          $ref: "#/components/responses/simplifiedUsers"
-        404:
-          description: user not founded
-    post:
-      tags:
-      - users
-      - friends
-      summary: "create a new friendRequest"
-      security: 
-      - bearerAuth: []
-      parameters:
-      - in: path
-        name: id
-        required: true
-        description: "user id"
->>>>>>> 4312bee6d39e7bf931d4735e045ff0a7281f9d7a
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-<<<<<<< HEAD
-              type: object
-              properties:
-                response:
-                  type: string
-                  enum:
-                  - accept
-                  - reject
-      responses:
-        200:
-          description: "OK"
-        401:
-          $ref: "#/components/responses/unauthorized"
-      
-    
-  /friends/sentRequests:
-    get:
-      tags: 
-      - friends
-      summary: "get user sent friend requests"
-      security: 
-      - bearerAuth: []
-      responses:
-        200:
-          $ref: "#/components/responses/simplifiedUsers"
+          $ref: "#/components/responses/basicUsers"
         401:
           $ref: "#/components/responses/unauthorized"
     post:
@@ -218,38 +119,74 @@ paths:
         401:
           $ref: "#/components/responses/unauthorized"
 
-=======
-              properties:
-                user:
-                  type: string
-                  description: receiver id
-      responses:
-        200:
-          description: OK
-        404:
-          description: user not founded
-      
->>>>>>> 4312bee6d39e7bf931d4735e045ff0a7281f9d7a
-  /login:
-    post:
-      tags: 
-      - auth
-      summary: "login user"
+  /friends/requests/{userId}:
+    put:
+      tags:
+      - friends
+      summary: "respond to friend request"
+      security:
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: userId
+        required: true
+        schema:
+          type: string
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/loginUser'
+              type: object
+              properties:
+                response:
+                  type: string
+                  enum:
+                  - accept
+                  - reject
       responses:
         200:
-          $ref: "#/components/responses/login"
-        400:
-          description: "invalid data"
-          
+          description: "OK"
+        401:
+          $ref: "#/components/responses/unauthorized"
+      
+    
+  /friends/requests/sent:
+    get:
+      tags: 
+      - friends
+      summary: "get user sent friend requests"
+      security: 
+      - bearerAuth: []
+      responses:
+        200:
+          $ref: "#/components/responses/basicUsers"
+        401:
+          $ref: "#/components/responses/unauthorized"
+# posts
+  /users/{id}/posts:
+     get:
+      tags: 
+      - posts
+      summary: "get user posts"
+      security: 
+      - bearerAuth: []
+      parameters:
+      - in: path
+        name: id
+        required: true
+        description: "user id"
+        schema:
+          type: string
+      responses:
+        200:
+          $ref: "#/components/responses/posts"
+        404:
+          description: user not founded  
+  
   /posts:
     post:
       tags: 
-      - post
+      - posts
       summary: create a new post
       security: 
       - bearerAuth: []
@@ -264,12 +201,11 @@ paths:
         400:
           $ref: '#/components/responses/invalidData'
         401:
-          $ref: '#/components/responses/unauthorized'
-          
-    get:
+          $ref: '#/components/responses/unauthorized' 
+    get: 
       tags:
-      - post 
-      summary: get all posts
+      - posts 
+      summary: get all posts (for testing will be removed soon)
       security: 
       - bearerAuth: []
       responses:
@@ -281,7 +217,7 @@ paths:
   /posts/{id}:
     get:
       tags: 
-      - post
+      - posts
       summary: "get post data"
       security: 
       - bearerAuth: []
@@ -299,12 +235,11 @@ paths:
           description: post not founded
         401:
           $ref: '#/components/responses/unauthorized'
-          
+# comments 
   /posts/{postId}/comments:
     get:
       tags:
-      - post
-      - comment
+      - comments
       summary: "get all comments on post"
       security: 
       - bearerAuth: []
@@ -322,14 +257,12 @@ paths:
           $ref: '#/components/responses/unauthorized'
         404:
           description: post not founded
-  /posts/{postId}/likes:
     post:
-      tags:
-      - post
-      - like
-      summary: add like to the post
+      tags: 
+      - comments
+      summary: create a new comment
       security: 
-        - bearerAuth: []
+      - bearerAuth: []
       parameters: 
       - in: path
         name: postId
@@ -337,25 +270,6 @@ paths:
         description: post id
         schema:
           type: string
-      requestBody:
-        content:
-          application/json: 
-            schema:
-              properties:
-                user:
-                  type: string
-                  description: user id
-                
-      responses:
-        200:
-          description: "like added"
-  /comments:
-    post:
-      tags: 
-      - comment
-      summary: create a new comment
-      security: 
-      - bearerAuth: []
       requestBody:
         content:
           application/json: 
@@ -368,87 +282,47 @@ paths:
           $ref: '#/components/responses/invalidData'
         401:
           $ref: '#/components/responses/unauthorized'
-          
+# likes 
+  /posts/{postId}/likes:
+    post:
+      tags:
+      - likes
+      summary: add like to the post
+      security: 
+        - bearerAuth: []
+      parameters: 
+      - in: path
+        name: postId
+        required: true
+        description: post id
+        schema:
+          type: string
+      responses:
+        200:
+          description: "like added"
+    get:
+      tags:
+        - likes
+      summary: get all users who liked this post
+      parameters: 
+      - in: path
+        name: postId
+        required: true
+        description: post id
+        schema:
+          type: string
+      responses:
+        200: 
+          $ref: '#/components/responses/basicUsers'
 components:
-  
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
-      
-  responses:
-    # errors
-    invalidData:
-      description: invalid data
-      content: 
-        application/json:
-          schema:
-            $ref: '#/components/schemas/errors'
-    unauthorized:
-      description: user not authorized to do this action
-    
-    # users
-    login:
-      description: OK
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              user:
-                $ref: '#/components/schemas/user'
-              token:
-                type: string
-    user:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/user'
-    
-    simplifiedUsers:
-      description: OK
-      content:
-        application/json:
-          schema:
-            type: array
-            items: 
-              $ref: '#/components/schemas/simplifiedUser'
-    
-    # posts
-    posts:
-      description: OK
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/post'
-    post:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/post'
-            # posts
-    comments:
-      description: OK
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: '#/components/schemas/comment'
-    comment:
-      description: OK
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/comment'
-  
+# schemas 
   schemas:
-    # helpers
+  # helpers
     postType:
       type: string
       enum:
@@ -464,7 +338,7 @@ components:
           type: array
           items: 
             type: string
-    # user schemas
+  # users
     user:
       type: "object"
       properties:
@@ -474,25 +348,9 @@ components:
           type: "string"
         email:
           type: "string"
-        password:
-          type: "string"
         photoUrl:
           type: "string"
         birthday:
-          type: "string"
-          format: "date"
-        friends: 
-          type: "array"
-          items:
-            type: "string"
-        friendRequests:
-          type: "array"
-          items:
-            type: "string"
-        createdAt:
-          type: "string"
-          format: "date"
-        updatedAt:
           type: "string"
           format: "date"
     createUser:
@@ -520,7 +378,7 @@ components:
             type: "string"
         password:
           type: "string"
-    simplifiedUser:
+    basicUser:
       type: object
       properties:
         name:
@@ -529,50 +387,47 @@ components:
           type: "string"
         photoUrl:
           type: "string"
-    # post schemas
+    users:
+      type: array
+      items:
+        $ref: '#/components/schemas/basicUser'
+  # posts
     post:
       type: "object"
       properties:
         _id:
           type: "string"
         user:
-          $ref: '#/components/schemas/simplifiedUser'
+          $ref: '#/components/schemas/basicUser'
         type:
           $ref: '#/components/schemas/postType'
         text: 
           type: "string"
           description: "post text content"
         likes:
-          type: "array"
-          items:
-            type: "string"
+          type: number
         createdAt:
-          type: "string"
-          format: "date"
-        updatedAt:
           type: "string"
           format: "date"
     createPost:
       properties:
-        user:
-          type: string
-          description: user id
         type:
           $ref: '#/components/schemas/postType'
         text:
           type: "string"
           description: "post text content"
-    # comment schemas
+    posts:
+      type: array
+      items:
+        $ref: '#/components/schemas/post'
+  # comments
     comment:
       type: "object"
       properties:
         _id:
           type: "string"
         user:
-          $ref: '#/components/schemas/simplifiedUser'
-        post:
-          type: "string"
-          description: "post id"
+          $ref: '#/components/schemas/basicUser'
         type:
           $ref: '#/components/schemas/commentType'
         text: 
@@ -585,19 +440,94 @@ components:
         createdAt:
           type: "string"
           format: "date"
-        updatedAt:
-          type: "string"
-          format: "date"
     createComment:
      properties:
-        user:
-          type: string
-          description: user id
-        post:
-          type: string
-          description: post id
         type:
           $ref: '#/components/schemas/commentType'
         text:
           type: "string"
-          description: "comment text content"
+          description: "comment text content" 
+# responses
+  responses:
+  # errors
+    invalidData:
+      description: invalid data
+      content: 
+        application/json:
+          schema:
+            $ref: '#/components/schemas/errors'
+    unauthorized:
+      description: user not authorized to do this action
+  # users
+    login:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              user:
+                $ref: '#/components/schemas/user'
+              token:
+                type: string
+    user:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user'
+    
+    basicUsers:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items: 
+              $ref: '#/components/schemas/basicUser' 
+    fullUserData:
+      description: OK
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/user'
+              - type: object
+                properties:
+                  posts: 
+                    $ref: '#/components/schemas/posts'
+              - type: object
+                properties:
+                  friends: 
+                    $ref: "#/components/schemas/users"
+              
+  # posts
+    posts:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/post'
+    post:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/post'
+  # comments
+    comments:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/comment'
+    comment:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/comment'
