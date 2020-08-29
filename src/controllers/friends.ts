@@ -1,19 +1,21 @@
 import User from "../models/user";
-import { controllerFunction } from "./helper";
-import { body } from "express-validator";
+import { controllerFunction } from "./helper/types";
+import {
+  getFriendsByUserId,
+  getSentFriendRequestsByUserId,
+  getFriendRequestsByUserId,
+} from "./helper/helper";
 
-export const friends: controllerFunction = async (req, res, next) => {
+export const listUserFriends: controllerFunction = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id)
-      .populate("friends", "name email photoUrl")
-      .exec();
-    res.json(user.friends);
+    const friends = await getFriendsByUserId(req.user._id);
+    res.json(friends);
   } catch (err) {
     next(err);
   }
 };
 
-export const newRequest: controllerFunction = async (req, res, next) => {
+export const createRequest: controllerFunction = async (req, res, next) => {
   try {
     await User.findByIdAndUpdate(req.body.userId, {
       $addToSet: { friendRequests: req.user._id },
@@ -22,25 +24,27 @@ export const newRequest: controllerFunction = async (req, res, next) => {
       $addToSet: { sentFriendRequests: req.body.userId },
     }).exec();
 
-    res.json({ message: "OK" });
+    res.sendStatus(200);
   } catch (err) {
     next(err);
   }
 };
 
-export const sentRequests: controllerFunction = async (req, res, next) => {
+export const listSentRequests: controllerFunction = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id, "sentFriendRequests").exec();
-    res.json(user.sentFriendRequests);
+    const sentFriendRequests = await getSentFriendRequestsByUserId(
+      req.user._id
+    );
+    res.json(sentFriendRequests);
   } catch (err) {
     next(err);
   }
 };
 
-export const requests: controllerFunction = async (req, res, next) => {
+export const listRequests: controllerFunction = async (req, res, next) => {
   try {
-    const user = await User.findById(req.user._id, "friendRequests").exec();
-    res.json(user.friendRequests);
+    const friendRequests = await getFriendRequestsByUserId(req.user._id);
+    res.json(friendRequests);
   } catch (err) {
     next(err);
   }
@@ -63,7 +67,7 @@ export const response: controllerFunction = async (req, res, next) => {
         $addToSet: { friends: req.user._id },
       });
     }
-    res.json({ message: "OK" });
+    res.sendStatus(200);
   } catch (err) {
     next(err);
   }

@@ -1,16 +1,12 @@
 import { Router, Response, Request } from "express";
 import userRouter from "./routers/user";
 import postRouter from "./routers/post";
-import auth from "./routers/auth";
-import commentRouter from "./routers/comments";
-
+import friendsRouter from "./routers/friends";
 const router = Router();
 
-router.use("/users/", userRouter);
-router.use("/posts/", postRouter);
-router.use("/comments/", commentRouter);
-router.use("/", auth);
-
+router.use("/", userRouter);
+router.use("/", postRouter);
+router.use("/", friendsRouter);
 router.use((err, req: Request, res: Response) => {
   if (err) {
     res.status(500).json(err);

@@ -56,6 +56,15 @@ export interface IUser extends Document {
   updatedAt?: Date;
 }
 
+export interface UserBase {
+  _id?: string;
+  name: string;
+  email: string;
+  password: string;
+  photoUrl?: string;
+  birthday?: string;
+}
+
 export const enum UserNaming {
   NAME = "name",
   EMAIL = "email",

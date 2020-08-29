@@ -1,5 +1,6 @@
 import { Schema, Document, model } from "mongoose";
 import { IUser } from "./user";
+import { IPost } from "./post";
 
 const commentSchema = new Schema(
   {
@@ -33,9 +34,17 @@ const commentSchema = new Schema(
 
 export interface IComment extends Document {
   user: IUser | string;
+  post: IPost | string;
   type: commentType;
-  test: string;
+  text: string;
   likes: IUser[];
+}
+
+export interface CommentBase {
+  user?: string;
+  post?: string;
+  type: commentType;
+  text: string;
 }
 
 export enum commentType {

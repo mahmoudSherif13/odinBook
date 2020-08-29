@@ -7,13 +7,12 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import router from "./router";
 import "./passport";
-import { IUser } from "./models/user";
+dotenv.config();
+const app = express();
+
 if (process.env.NODE_ENV !== "testing") {
   require("./dbConfigs/production");
 }
-
-dotenv.config();
-const app = express();
 
 app.set("port", process.env.PORT || 3000);
 app.use(compression());
@@ -25,7 +24,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "*");
   next();

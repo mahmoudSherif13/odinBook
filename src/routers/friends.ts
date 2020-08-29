@@ -1,13 +1,26 @@
 import { Router } from "express";
 import * as friendsController from "../controllers/friends";
+import {
+  authenticateUser,
+  validateFriendRequestData,
+  validateFriendRequestId,
+} from "./helper";
 
 const router = Router();
 
-router.get("/", friendsController.friends);
+router.use("/friends/", authenticateUser);
+router.get("/friends/", friendsController.listUserFriends);
 
-router.get("/requests/", friendsController.requests);
-router.put("/requests/:id", friendsController.response);
-
-router.get("/sentRequests/", friendsController.sentRequests);
-router.post("/sentRequests/", friendsController.newRequest);
+router.get("/friends/requests/", friendsController.listRequests);
+router.post(
+  "/friends/requests/",
+  validateFriendRequestData,
+  friendsController.createRequest
+);
+router.put(
+  "/friends/requests/:userId",
+  validateFriendRequestId,
+  friendsController.response
+);
+router.get("/friends/requests/sent", friendsController.listSentRequests);
 export default router;

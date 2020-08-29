@@ -37,8 +37,15 @@ postSchema.virtual("baseUrl").get(function () {
 export interface IPost extends Document {
   user: IUser | string;
   type: postType;
-  test: string;
-  likes: IUser[];
+  text: string;
+  likes: IUser[] | string[];
+}
+
+export interface PostBase {
+  _id?: string;
+  user?: string | IUser;
+  type: postType;
+  text: string;
 }
 
 export enum postType {

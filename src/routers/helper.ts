@@ -5,7 +5,7 @@ import User, { UserNaming } from "../models/user";
 import Post, { PostNaming, postType } from "../models/post";
 import * as POST_ERRORS from "../errorCodes";
 import { CommentNaming, commentType } from "../models/comment";
-import { controllerFunction } from "src/controllers/helper";
+import { controllerFunction } from "../controllers/helper/types";
 
 const validate: controllerFunction = async (req, res, next) => {
   const errors = validationResult(req);
@@ -59,17 +59,6 @@ export const validateUserData = [
 ];
 
 export const validatePostData = [
-  body(PostNaming.USER)
-    .exists()
-    .withMessage(POST_ERRORS.MISSING_USER_ID)
-    .bail()
-    .custom(async (userId) => {
-      const user = await User.findById(userId);
-      if (!user) {
-        return Promise.reject();
-      }
-    })
-    .withMessage(POST_ERRORS.INVALID_USER_ID),
   body(PostNaming.TYPE)
     .exists()
     .withMessage(POST_ERRORS.MISSING_TYPE)
@@ -90,28 +79,6 @@ export const validatePostData = [
 ];
 
 export const validateCommentData = [
-  body(CommentNaming.USER)
-    .exists()
-    .withMessage(POST_ERRORS.MISSING_USER_ID)
-    .bail()
-    .custom(async (userId) => {
-      const user = await User.findById(userId);
-      if (!user) {
-        return Promise.reject();
-      }
-    })
-    .withMessage(POST_ERRORS.INVALID_USER_ID),
-  body(CommentNaming.POST)
-    .exists()
-    .withMessage("missing post Id")
-    .bail()
-    .custom(async (postId) => {
-      const post = await Post.findById(postId);
-      if (!post) {
-        return Promise.reject();
-      }
-    })
-    .withMessage("invalid post id"),
   body(CommentNaming.TYPE)
     .exists()
     .withMessage(POST_ERRORS.MISSING_TYPE)
@@ -131,8 +98,33 @@ export const validateCommentData = [
   validate,
 ];
 
+export const validateFriendRequestId = [
+  async (req, res, next): Promise<void> => {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      res.sendStatus(404);
+      return;
+    }
+    next();
+  },
+];
+
+export const validateFriendRequestData = [
+  body("userId")
+    .exists()
+    .withMessage("messing userId")
+    .custom(async (userId) => {
+      const user = await User.findById(userId);
+      if (!user) {
+        return Promise.reject();
+      }
+    })
+    .withMessage("invalid userId")
+    .escape(),
+  validate,
+];
 export const validateUserId: controllerFunction = async (req, res, next) => {
-  const user = await User.findById(req.params.userId).exec();
+  const user = await User.findById(req.params.userId);
   if (!user) {
     res.sendStatus(404);
     return;
@@ -141,7 +133,7 @@ export const validateUserId: controllerFunction = async (req, res, next) => {
 };
 
 export const validatePostId: controllerFunction = async (req, res, next) => {
-  const post = await Post.findById(req.params.postId).exec();
+  const post = await Post.findById(req.params.postId);
   if (!post) {
     res.sendStatus(404);
     return;

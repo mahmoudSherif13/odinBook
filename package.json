@@ -20,6 +20,7 @@
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
     "tc": "NODE_ENV=testing jest --forceExit --coverage --verbose",
     "test": "NODE_ENV=testing jest --forceExit --verbose",
+    "testN": "NODE_ENV=testing jest",
     "start": "node dist/server.js"
   },
   "keywords": [],
