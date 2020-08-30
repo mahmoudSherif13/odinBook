@@ -1,19 +1,15 @@
 import {
-  generateComment,
   createPost,
   createUserAndGetToken,
-  expectComment,
   getToken,
   clearDataBase,
   createUser,
-  createComment,
-  expectComments,
   createLike,
-  expectUsers,
-} from "./helper";
+} from "./helper/helper";
+import { expectUsers } from "./helper/expect";
 import request from "supertest";
 import app from "../app";
-import { invalidId } from "./testData";
+import { invalidId } from "./helper/testData";
 import { connect } from "../dbConfigs/testing";
 import Post from "../models/post";
 

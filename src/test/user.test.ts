@@ -1,18 +1,16 @@
 import request from "supertest";
 import app from "../app";
 import User from "../models/user";
-import { invalidId } from "./testData";
+import { invalidId } from "./helper/testData";
 import {
-  expectUser,
-  generateUser,
   createUser,
   createUserAndGetToken,
   getToken,
   createPost,
-  expectPosts,
-  expectUsers,
   createFriend,
-} from "./helper";
+} from "./helper/helper";
+import { expectPosts, expectUsers, expectUser } from "./helper/expect";
+import { generateUser } from "./helper/generators";
 import mongoose from "mongoose";
 import { connect } from "../dbConfigs/testing";
 

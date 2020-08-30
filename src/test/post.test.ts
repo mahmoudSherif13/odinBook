@@ -1,20 +1,18 @@
 import request from "supertest";
 import app from "../app";
-import User from "../models/user";
 import Post from "../models/post";
 import {
-  expectPost,
   createUserAndGetToken,
   createPost,
   createUser,
-  expectPosts,
   createFriend,
   getToken,
-  generatePost,
   clearDataBase,
-} from "./helper";
+} from "./helper/helper";
+import { expectPosts, expectPost } from "./helper/expect";
+import { generatePost } from "./helper/generators";
 import { connect } from "../dbConfigs/testing";
-import { invalidId } from "./testData";
+import { invalidId } from "./helper/testData";
 import * as POST_ERRORS from "../errorCodes";
 
 beforeAll(connect);

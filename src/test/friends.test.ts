@@ -5,13 +5,13 @@ import {
   createUserAndGetToken,
   createUser,
   createFriend,
-  expectUsers,
   createFriendRequest,
   clearDataBase,
   getToken,
-} from "./helper";
+} from "./helper/helper";
+import { expectUsers } from "./helper/expect";
 import { connect } from "../dbConfigs/testing";
-import { invalidId } from "./testData";
+import { invalidId } from "./helper/testData";
 
 beforeAll(connect);
 
@@ -172,7 +172,7 @@ describe("response to a friend request PUT /friends/requests/requestId", () => {
   });
 
   it("no auth", async () => {
-    const { user, token } = await createUserAndGetToken();
+    const user = await createUser();
     const friend = await createUser();
     await createFriendRequest(user, friend);
     await request(app)

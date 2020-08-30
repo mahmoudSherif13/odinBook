@@ -1,94 +1,10 @@
 import request from "supertest";
-import app from "../app";
-import { IUser, UserBase } from "../models/user";
-import { IPost, PostBase, postType } from "../models/post";
-import { v4 as generateUuid } from "uuid";
-import { IComment, CommentBase, commentType } from "../models/comment";
-import User from "../models/user";
-import Post from "../models/post";
-import Comment from "../models/comment";
+import app from "../../app";
+import User, { IUser } from "../../models/user";
+import Post, { IPost } from "../../models/post";
+import Comment, { IComment } from "../../models/comment";
+import { generateComment, generateUser, generatePost } from "./generators";
 
-// expect
-export function expectUser(reserved, expected): void {
-  expect(reserved._id).toBeDefined();
-  expect(reserved.name).toEqual(expected.name);
-  expect(reserved.email).toEqual(expected.email);
-  if (expected.photoUrl) {
-    expect(reserved.photoUrl).toBeDefined();
-  }
-  if (expected.birthday) {
-    expect(reserved.birthday).toEqual(expected.birthday);
-  }
-}
-
-export function expectPost(reserved, expected): void {
-  expect(reserved._id).toBeDefined();
-  expect(reserved.user._id.toString()).toEqual(expected.user._id.toString());
-  expect(reserved.type).toEqual(expected.type);
-  expect(reserved.text).toEqual(expected.text);
-}
-
-export function expectUsers(reserved, expected): void {
-  for (let i = 0; i < expected.length; i++) {
-    expectUser(reserved[i], expected[i]);
-  }
-}
-
-export function expectPosts(reserved, expected): void {
-  for (let i = 0; i < expected.length; i++) {
-    expectPost(reserved[i], expected[i]);
-  }
-}
-
-export function expectComment(reserved, expected): void {
-  expect(reserved._id).toBeDefined();
-  expect(reserved.user._id.toString()).toEqual(expected.user._id.toString());
-  expect(reserved.post.toString()).toEqual(expected.post.toString());
-  expect(reserved.type).toEqual(expected.type);
-  expect(reserved.text).toEqual(expected.text);
-}
-
-export function expectComments(reserved, expected): void {
-  for (let i = 0; i < expected.length; i++) {
-    expectComment(reserved[i], expected[i]);
-  }
-}
-
-// generators
-export function generateUser(update = {}): UserBase {
-  const gen = Date.now() + generateUuid();
-  const userData = {
-    name: gen,
-    password: "password",
-    email: gen + "@gmail.com",
-    photoUrl: "https://www.url.com/photo.jpg",
-    birthday: "20-12-2020",
-    ...update,
-  };
-  return userData;
-}
-
-export function generatePost(update = {}): PostBase {
-  const gen = Date.now() + generateUuid();
-  const postData = {
-    type: postType.text,
-    text: "post text : " + gen,
-    ...update,
-  };
-  return postData;
-}
-
-export function generateComment(update = {}): CommentBase {
-  const gen = Date.now() + generateUuid();
-  const commentData = {
-    type: commentType.text,
-    text: "comment text : " + gen,
-    ...update,
-  };
-  return commentData;
-}
-
-// creation
 export async function createUser(update = {}): Promise<IUser> {
   const userData = generateUser(update);
   return (await request(app).post("/users/").send(userData)).body;
@@ -122,9 +38,6 @@ export async function createFriendRequest(
   return senUser;
 }
 
-/**
- * @param user if user is undefined function will generate one
- */
 export async function getToken(user?: IUser): Promise<string> {
   if (user === undefined) {
     user = await createUser();
