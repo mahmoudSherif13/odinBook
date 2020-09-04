@@ -6,6 +6,7 @@ import compression from "compression";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import router from "./router";
+import cors from "cors";
 import "./passport";
 dotenv.config();
 const app = express();
@@ -25,8 +26,27 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  if (req.method === "OPTIONS") {
+    const headers = {};
+    // IE8 does not allow domains to be specified, just the *
+    // headers["Access-Control-Allow-Origin"] = req.headers.origin;
+    headers["Access-Control-Allow-Origin"] = "*";
+    headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";
+    headers["Access-Control-Allow-Credentials"] = true;
+    headers["Access-Control-Max-Age"] = "86400"; // 24 hours
+    headers["Access-Control-Allow-Headers"] = "*";
+    res.writeHead(200, headers);
+    res.end();
+  } else {
+    next();
+  }
+});
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
   res.header("Access-Control-Allow-Headers", "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "POST PUT GET");
   next();
 });
 
