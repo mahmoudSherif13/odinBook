@@ -325,6 +325,106 @@ paths:
       responses:
         200: 
           $ref: '#/components/responses/basicUsers'
+# chats
+  /chats/:
+    get:
+      tags:
+        - chats
+      summary: get all chats for the current user
+      security: 
+        - bearerAuth: []
+      responses:
+        200:
+          $ref: "#/components/responses/chats"
+        401:
+          $ref: "#/components/responses/unauthorized"
+    post:
+      tags:
+        - chats
+      summary: create a new chat
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: string
+                  description: user id
+      responses:
+        200:
+          $ref: "#/components/responses/chat"
+        401:
+          $ref: "#/components/responses/unauthorized"
+
+  /chats/{chatId}/:
+    get:
+      tags:
+        - chats
+      summary: get chat with id 
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: chatId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          $ref: "#/components/responses/chat"
+        401:
+          $ref: "#/components/responses/unauthorized"
+  /chats/{chatId}/messages/:
+    post:
+      tags:
+        - chats
+      summary: create a new message
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: chatId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/basicMessage"
+      responses:
+        200:
+          $ref: "#/components/responses/message"
+        401:
+          $ref: "#/components/responses/unauthorized"
+    put:
+      tags:
+        - chats
+      summary: edit the chat messages states
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: chatId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                state:
+                  $ref: "#/components/schemas/messageState"
+      responses:
+        200:
+          $ref: "#/components/responses/message"
+        401:
+          $ref: "#/components/responses/unauthorized"
 components:
   securitySchemes:
     bearerAuth:
@@ -342,6 +442,16 @@ components:
       type: string
       enum:
       - "text"
+    messageType:
+      type: string
+      enum:
+        - "text"
+    messageState:
+      type: string
+      enum:
+        - "hold"
+        - "received"
+        - "read"
     errors:
       type: object
       properties:
@@ -458,6 +568,50 @@ components:
         text:
           type: "string"
           description: "comment text content" 
+  # chats
+    message:
+      type: object
+      properties:
+        _id:
+          type: string
+        user:
+          type: string
+          description: userId
+        state:
+          $ref: "#/components/schemas/messageState"
+        type:
+          $ref: "#/components/schemas/messageType"
+        text:
+          type: string
+    basicMessage:
+      type: object
+      properties:
+        type:
+          $ref: "#/components/schemas/messageType"
+        text:
+          type: string
+    chat:
+      type: object
+      properties:
+        _id:
+          type: string
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/basicUser'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/message'
+    lastMessageChat:
+      type: object
+      properties:
+        _id:
+          type: string
+        user:
+          $ref: '#/components/schemas/basicUser'
+        lastMessage:
+          $ref: '#/components/schemas/message'   
 # responses
   responses:
   # errors
@@ -513,8 +667,7 @@ components:
               - type: object
                 properties:
                   friends: 
-                    $ref: "#/components/schemas/users"
-              
+                    $ref: "#/components/schemas/users"            
   # posts
     posts:
       description: OK
@@ -545,3 +698,24 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/comment'
+  # chats
+    chats:
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/lastMessageChat"
+    chat:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/chat"
+    message:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/message"
