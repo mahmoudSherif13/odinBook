@@ -350,7 +350,7 @@ paths:
             schema:
               type: object
               properties:
-                user:
+                userId:
                   type: string
                   description: user id
       responses:
