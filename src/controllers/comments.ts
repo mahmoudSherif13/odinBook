@@ -1,5 +1,5 @@
 import Comment from "../models/comment";
-import { getCommentById, getCommentsByPostId } from "./helper/helper";
+import { getCommentById, getCommentsByPostId } from "./helper/getters";
 import { controllerFunction } from "./helper/types";
 
 export const create: controllerFunction = async (req, res, next) => {

@@ -6,7 +6,7 @@ import {
   getCommentsByPostId,
   getPostAndLikesListById,
   getFriendsByUserId,
-} from "./helper/helper";
+} from "./helper/getters";
 
 // for testing will be removed soon
 export const index: controllerFunction = async (req, res, next) => {

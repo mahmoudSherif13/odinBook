@@ -1,25 +1,12 @@
 import { controllerFunction } from "./helper/types";
 import Chat, { messageState } from "../models/chat";
-
-const MESSAGE_SELECTOR =
-  "messages._id messages.user messages.type messages.text messages.state ";
-const CHAT_SELECTOR = "_id users messages ";
+import { MESSAGE_SELECTOR } from "./helper/selectors";
+import { getChatsByUserId, getChatById } from "./helper/getters";
 
 export const index: controllerFunction = async (req, res, next) => {
   try {
-    const chats = await Chat.find({ users: req.user._id }, CHAT_SELECTOR).slice(
-      "messages",
-      -1
-    );
-    const chatsArr = [];
-    chats.forEach((chat) => {
-      chatsArr.push({
-        _id: chat._id,
-        users: chat.users,
-        lastMessage: chat.messages[0],
-      });
-    });
-    res.json(chatsArr);
+    const chats = await getChatsByUserId(req.user._id);
+    res.json(chats);
   } catch (err) {
     next(err);
   }
@@ -27,7 +14,7 @@ export const index: controllerFunction = async (req, res, next) => {
 
 export const show: controllerFunction = async (req, res, next) => {
   try {
-    const chat = await Chat.findById(req.params.chatId, CHAT_SELECTOR);
+    const chat = await getChatById(req.params.chatId);
     res.json(chat);
   } catch (err) {
     next(err);
@@ -48,7 +35,7 @@ export const create: controllerFunction = async (req, res, next) => {
         users: [req.user._id, req.body.userId],
       })
     )._id;
-    const chat = await Chat.findById(chatId, CHAT_SELECTOR);
+    const chat = await getChatById(chatId);
     res.json(chat);
   } catch (err) {
     next(err);

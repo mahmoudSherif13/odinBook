@@ -1,6 +1,6 @@
 import Post from "../models/post";
 import { controllerFunction } from "./helper/types";
-import { getLikesByPostId } from "./helper/helper";
+import { getLikesByPostId } from "./helper/getters";
 
 export const create: controllerFunction = async (req, res, next) => {
   try {

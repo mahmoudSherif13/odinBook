@@ -4,7 +4,7 @@ import {
   getFriendsByUserId,
   getSentFriendRequestsByUserId,
   getFriendRequestsByUserId,
-} from "./helper/helper";
+} from "./helper/getters";
 
 export const listUserFriends: controllerFunction = async (req, res, next) => {
   try {

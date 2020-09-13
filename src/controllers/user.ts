@@ -5,7 +5,7 @@ import {
   getUserDataByUserId,
   getPostsByUserId,
   getFriendsByUserId,
-} from "./helper/helper";
+} from "./helper/getters";
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import dotenv from "dotenv";
