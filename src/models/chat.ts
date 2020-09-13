@@ -50,7 +50,7 @@ export interface IMessage extends Document {
 
 export interface IChat extends Document {
   users: IUser[] | string[];
-  messages: IMessage[];
+  messages?: any[];
 }
 
 export enum messageType {

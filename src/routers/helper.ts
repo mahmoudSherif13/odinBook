@@ -3,6 +3,7 @@ import passport from "passport";
 import { body } from "express-validator";
 import User, { UserNaming } from "../models/user";
 import Post, { PostNaming, postType } from "../models/post";
+import Chat, { messageType } from "../models/chat";
 import * as POST_ERRORS from "../errorCodes";
 import { CommentNaming, commentType } from "../models/comment";
 import { controllerFunction } from "../controllers/helper/types";
@@ -24,7 +25,6 @@ const validate: controllerFunction = async (req, res, next) => {
 export const authenticateUser = [
   passport.authenticate("jwt", { session: false }),
 ];
-export const authorize = [];
 
 export const validateUserData = [
   body(UserNaming.NAME)
@@ -98,17 +98,6 @@ export const validateCommentData = [
   validate,
 ];
 
-export const validateFriendRequestId = [
-  async (req, res, next): Promise<void> => {
-    const user = await User.findById(req.params.userId);
-    if (!user) {
-      res.sendStatus(404);
-      return;
-    }
-    next();
-  },
-];
-
 export const validateFriendRequestData = [
   body("userId")
     .exists()
@@ -123,6 +112,42 @@ export const validateFriendRequestData = [
     .escape(),
   validate,
 ];
+
+export const validateChatData = [
+  body("userId")
+    .exists()
+    .withMessage("messing userId")
+    .custom(async (userId) => {
+      const user = await User.findById(userId);
+      if (!user) {
+        return Promise.reject();
+      }
+    })
+    .withMessage("invalid userId")
+    .exists(),
+  validate,
+];
+
+export const validateMessageData = [
+  body("type")
+    .exists()
+    .withMessage("messing type")
+    .bail()
+    .custom(async (type) => {
+      if (!Object.values(messageType).includes(type)) {
+        return Promise.reject();
+      }
+    })
+    .withMessage("invalid message type"),
+  body("text")
+    .exists()
+    .withMessage("messing text")
+    .bail()
+    .notEmpty()
+    .withMessage("empty text"),
+  validate,
+];
+
 export const validateUserId: controllerFunction = async (req, res, next) => {
   const user = await User.findById(req.params.userId);
   if (!user) {
@@ -135,6 +160,28 @@ export const validateUserId: controllerFunction = async (req, res, next) => {
 export const validatePostId: controllerFunction = async (req, res, next) => {
   const post = await Post.findById(req.params.postId);
   if (!post) {
+    res.sendStatus(404);
+    return;
+  }
+  next();
+};
+
+export const validateChatId: controllerFunction = async (req, res, next) => {
+  const chat = await Chat.findById(req.params.chatId, "_id");
+  if (!chat) {
+    res.status(404);
+    return;
+  }
+  next();
+};
+
+export const validateFriendRequestId: controllerFunction = async (
+  req,
+  res,
+  next
+) => {
+  const user = await User.findById(req.params.userId);
+  if (!user) {
     res.sendStatus(404);
     return;
   }

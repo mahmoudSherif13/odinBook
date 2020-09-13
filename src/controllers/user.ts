@@ -43,7 +43,7 @@ export const getUserProfile: controllerFunction = async (req, res, next) => {
   }
 };
 
-export const login: controllerFunction = async (req, res, next) => {
+export const login: controllerFunction = async (req, res) => {
   passport.authenticate("local", { session: false }, (err, user, info) => {
     if (err || !user) {
       return res.status(400).json({

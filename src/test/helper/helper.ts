@@ -3,7 +3,13 @@ import app from "../../app";
 import User, { IUser } from "../../models/user";
 import Post, { IPost } from "../../models/post";
 import Comment, { IComment } from "../../models/comment";
-import { generateComment, generateUser, generatePost } from "./generators";
+import Chat, { IMessage, IChat } from "../../models/chat";
+import {
+  generateComment,
+  generateUser,
+  generatePost,
+  generateMessage,
+} from "./generators";
 
 export async function createUser(update = {}): Promise<IUser> {
   const userData = generateUser(update);
@@ -111,8 +117,45 @@ export async function createLike(
     .expect(200);
 }
 
+export async function createChat(
+  senUser: IUser,
+  resUser?: IUser,
+  update = {}
+): Promise<IChat> {
+  if (!resUser) {
+    resUser = await createUser();
+  }
+  const token = await getToken(senUser);
+  const chatData = {
+    user: resUser._id,
+    ...update,
+  };
+  const res = await request(app)
+    .post("/chat/")
+    .send(chatData)
+    .set("Authorization", "Bearer " + token)
+    .expect(200);
+  return res.body;
+}
+
+export async function createMessage(
+  chat: IChat,
+  user: IUser,
+  update = {}
+): Promise<IMessage> {
+  const token = await getToken(user);
+  const messageData = generateMessage(update);
+  const res = await request(app)
+    .post(`/chats/${chat._id}/messages/`)
+    .send(messageData)
+    .set("Authorization", "Bearer " + token)
+    .expect(200);
+  return res.body;
+}
+
 export async function clearDataBase(): Promise<void> {
   await Post.deleteMany({});
   await User.deleteMany({});
   await Comment.deleteMany({});
+  await Chat.deleteMany({});
 }
