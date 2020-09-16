@@ -14,6 +14,7 @@ import { generatePost } from "./helper/generators";
 import { connect } from "../dbConfigs/testing";
 import { invalidId } from "./helper/testData";
 import * as POST_ERRORS from "../errorCodes";
+import { createPost as cp } from "../controllers/helper/creators";
 
 beforeAll(connect);
 
@@ -94,16 +95,12 @@ describe("create post POST /posts", () => {
   it("200 OK", async () => {
     const { user, token } = await createUserAndGetToken();
     const postData = generatePost();
-    const res = await request(app)
-      .post("/posts/")
-      .send(postData)
-      .set("Authorization", "Bearer " + token)
-      .expect(200);
+    const id = await cp({ ...postData, user: user._id });
     // check db
-    const dbPost = await Post.findById(res.body._id)
+    const dbPost = await Post.findById(id)
       .populate("user", "name email photoUrl")
       .exec();
-    expectPost(dbPost, { ...postData, user });
+    expect(dbPost).toBeDefined();
   });
 
   it("no auth", async () => {
