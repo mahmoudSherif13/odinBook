@@ -1,6 +1,9 @@
 import { Schema, Document, model } from "mongoose";
 import { IUser } from "./user";
-import { IPost } from "./post";
+
+export enum commentType {
+  text = "text",
+}
 
 const commentSchema = new Schema(
   {
@@ -16,7 +19,7 @@ const commentSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["text"],
+      enum: Object.values(commentType),
       required: true,
     },
     text: String,
@@ -32,30 +35,15 @@ const commentSchema = new Schema(
   }
 );
 
-export interface IComment extends Document {
-  user: IUser | string;
-  post: IPost | string;
-  type: commentType;
-  text: string;
-  likes: IUser[];
-}
-
 export interface CommentBase {
-  user?: string;
-  post?: string;
   type: commentType;
   text: string;
+
+  user?: IUser | string;
+  post?: string;
+  likes?: IUser[];
 }
 
-export enum commentType {
-  text = "text",
-}
+export type IComment = Document & CommentBase;
 
-export const enum CommentNaming {
-  USER = "user",
-  TYPE = "type",
-  TEXT = "text",
-  LIKES = "likes",
-  POST = "post",
-}
 export default model<IComment>("Comment", commentSchema);

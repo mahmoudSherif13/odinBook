@@ -1,4 +1,4 @@
-import Comment from "../models/comment";
+import { creatComment } from "./helper/creators";
 import { getCommentById, getCommentsByPostId } from "./helper/getters";
 import { controllerFunction } from "./helper/types";
 
@@ -9,7 +9,7 @@ export const create: controllerFunction = async (req, res, next) => {
       user: req.user._id,
       post: req.params.postId,
     };
-    const id = (await Comment.create(commentData))._id;
+    const id = await creatComment(commentData);
     const comment = await getCommentById(id);
     res.json(comment);
   } catch (err) {
