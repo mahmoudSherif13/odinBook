@@ -20,7 +20,7 @@ export function generateUser(update = {}): UserBase {
 
 export function generatePost(update = {}): PostBase {
   const gen = Date.now() + generateUuid();
-  const postData = {
+  const postData: PostBase = {
     type: postType.text,
     text: "post text : " + gen,
     ...update,

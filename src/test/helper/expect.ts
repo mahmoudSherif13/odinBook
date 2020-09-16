@@ -1,31 +1,37 @@
+import { PostBase } from "src/models/post";
 import { UserBase } from "src/models/user";
 
-export function expectUserFormat(received: UserBase & { _id?: string }): void {
+type UserBaseWithId = UserBase & { _id?: string };
+type PostBaseWithId = PostBase & { _id?: string };
+
+export function expectUserFormat(received: UserBaseWithId): void {
   expect(received._id).toBeDefined();
   expect(received.firstName).toBeDefined();
   expect(received.lastName).toBeDefined();
   expect(received.email).toBeDefined();
 }
-export function expectPostFormat(received): void {
+export function expectPostFormat(received: PostBaseWithId): void {
   expect(received._id).toBeDefined();
   expect(received.type).toBeDefined();
-  expect(received.likes).toBeDefined();
+  expect(received.text).toBeDefined();
+  expect(received.user).toBeDefined();
 }
 export function expectCommentFormat(received): void {
   expect(received._id).toBeDefined();
   expect(received.type).toBeDefined();
 }
 
-export function expectUser(received: UserBase, expected: UserBase): void {
+export function expectUser(received: UserBaseWithId, expected: UserBase): void {
   expectUserFormat(received);
   expect(received.email).toEqual(expected.email);
 }
 
-export function expectPost(received, expected): void {
+export function expectPost(
+  received: PostBaseWithId,
+  expected: PostBaseWithId
+): void {
   expectPostFormat(received);
-  expect(received.user._id.toString()).toEqual(expected.user._id.toString());
-  expect(received.type).toEqual(expected.type);
-  expect(received.text).toEqual(expected.text);
+  expect(received._id.toString()).toEqual(expected._id.toString());
 }
 
 export function expectComment(received, expected): void {
@@ -42,7 +48,10 @@ export function expectUsers(received, expected): void {
   }
 }
 
-export function expectPosts(received, expected): void {
+export function expectPosts(
+  received: PostBaseWithId[],
+  expected: PostBaseWithId[]
+): void {
   for (let i = 0; i < expected.length; i++) {
     expectPost(received[i], expected[i]);
   }

@@ -1,6 +1,10 @@
 import { Schema, Document, model } from "mongoose";
 import { IUser } from "./user";
 
+export enum postType {
+  text = "text",
+}
+
 const postSchema = new Schema(
   {
     user: {
@@ -10,7 +14,7 @@ const postSchema = new Schema(
     },
     type: {
       type: String,
-      enum: ["text"],
+      enum: Object.values(postType),
       required: true,
     },
     text: String,
@@ -26,37 +30,14 @@ const postSchema = new Schema(
   }
 );
 
-postSchema.virtual("url").get(function () {
-  return "/posts/" + this._id;
-});
-
-postSchema.virtual("baseUrl").get(function () {
-  return "/posts/";
-});
-
-export interface IPost extends Document {
-  user: IUser | string;
-  type: postType;
-  text: string;
-  likes: IUser[] | string[];
-}
-
 export interface PostBase {
-  _id?: string;
-  user?: string | IUser;
   type: postType;
   text: string;
+
+  user?: string | IUser;
+  likes?: string[] | IUser[];
 }
 
-export enum postType {
-  text = "text",
-}
+export type IPost = Document & PostBase;
 
-export const enum PostNaming {
-  USER = "user",
-  TYPE = "type",
-  TEXT = "text",
-  LIKES = "likes",
-  BASE_URL = "/posts/",
-}
 export default model<IPost>("Post", postSchema);
