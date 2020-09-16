@@ -1,11 +1,10 @@
 import { Router } from "express";
 import {
   validatePostData,
-  authenticateUser,
   validatePostId,
   validateCommentData,
-} from "./helper";
-
+} from "./validators/post";
+import { authenticateUser } from "./validators/user";
 import * as postController from "../controllers/post";
 import * as commentsController from "../controllers/comments";
 import * as likesController from "../controllers/likes";

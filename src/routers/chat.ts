@@ -1,11 +1,11 @@
 import { Router } from "express";
 import * as chatController from "../controllers/chat";
 import {
-  authenticateUser,
   validateChatId,
   validateChatData,
   validateMessageData,
-} from "./helper";
+} from "./validators/chat";
+import { authenticateUser } from "./validators/user";
 
 const router = Router();
 

@@ -4,7 +4,7 @@ import {
   authenticateUser,
   validateFriendRequestData,
   validateFriendRequestId,
-} from "./helper";
+} from "./validators/user";
 
 const router = Router();
 
