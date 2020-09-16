@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { IUser } from "../../models/user";
+import { UserBase } from "../../models/user";
 
 interface requestWithUser extends Request {
-  user?: IUser;
+  user?: UserBase & { _id: string };
 }
 
 export interface controllerFunction {

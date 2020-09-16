@@ -14,7 +14,6 @@ const router = Router();
 router.use("/posts/", authenticateUser);
 router.use("/posts/:postId", validatePostId);
 
-router.get("/posts/", postController.index);
 router.post("/posts/", validatePostData, postController.create);
 router.get("/posts/:postId", postController.show);
 

@@ -1,5 +1,5 @@
-import User, { IUser } from "../../models/user";
-import Post, { IPost } from "../../models/post";
+import User, { IUser, UserBase } from "../../models/user";
+import Post, { IPost, PostBase } from "../../models/post";
 import Comment, { IComment } from "../../models/comment";
 import {
   USER_SELECTOR,
@@ -70,8 +70,12 @@ export async function getPostAndLikesListById(postId: string): Promise<IPost> {
   return post;
 }
 
-export async function getLikesByPostId(postId: string): Promise<IPost> {
-  return await Post.findById(postId).populate("likes", USER_SELECTOR).exec();
+export async function getLikesByPostId(
+  postId: string
+): Promise<IUser[] | string[]> {
+  return await (
+    await Post.findById(postId).populate("likes", USER_SELECTOR).exec()
+  ).likes;
 }
 
 export async function getCommentsByPostId(postId: string): Promise<IComment[]> {
@@ -85,6 +89,18 @@ export async function getCommentById(commentId: string): Promise<IComment> {
   return await Comment.findById(commentId, COMMENT_SELECTOR)
     .populate("user", USER_SELECTOR)
     .exec();
+}
+
+export async function getFeedPostsByUserId(userId: string): Promise<IPost[]> {
+  const feedUsers: any = await getFriendsByUserId(userId);
+  feedUsers.push(userId);
+  const postList = await Post.find({ user: { $in: feedUsers } })
+    .populate("user", USER_SELECTOR)
+    .sort({
+      createdAt: 1,
+    })
+    .exec();
+  return postList;
 }
 
 // chats

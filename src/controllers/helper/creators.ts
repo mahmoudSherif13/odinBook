@@ -8,3 +8,9 @@ export async function createPost(postData: PostBase): Promise<string> {
 export async function creatComment(commentData: CommentBase): Promise<string> {
   return (await Comment.create(commentData))._id;
 }
+
+export async function addLike(postId: string, userId: string): Promise<void> {
+  await Post.findByIdAndUpdate(postId, {
+    $addToSet: { likes: userId },
+  });
+}

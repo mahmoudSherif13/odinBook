@@ -38,6 +38,6 @@ export interface PostBase {
   likes?: string[] | IUser[];
 }
 
-export type IPost = Document & PostBase;
+export interface IPost extends Document, PostBase {}
 
 export default model<IPost>("Post", postSchema);
