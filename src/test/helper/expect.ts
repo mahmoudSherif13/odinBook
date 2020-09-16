@@ -1,6 +1,9 @@
-export function expectUserFormat(received) {
+import { UserBase } from "src/models/user";
+
+export function expectUserFormat(received: UserBase & { _id?: string }): void {
   expect(received._id).toBeDefined();
-  expect(received.name).toBeDefined();
+  expect(received.firstName).toBeDefined();
+  expect(received.lastName).toBeDefined();
   expect(received.email).toBeDefined();
 }
 export function expectPostFormat(received): void {
@@ -13,16 +16,9 @@ export function expectCommentFormat(received): void {
   expect(received.type).toBeDefined();
 }
 
-export function expectUser(received, expected): void {
+export function expectUser(received: UserBase, expected: UserBase): void {
   expectUserFormat(received);
-  expect(received.name).toEqual(expected.name);
   expect(received.email).toEqual(expected.email);
-  if (expected.photoUrl) {
-    expect(received.photoUrl).toBeDefined();
-  }
-  if (expected.birthday) {
-    expect(received.birthday).toEqual(expected.birthday);
-  }
 }
 
 export function expectPost(received, expected): void {

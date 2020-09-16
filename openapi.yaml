@@ -460,82 +460,76 @@ components:
           items: 
             type: string
   # users
+    basicUser:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        photoUrl:
+          type: string
+        birthday:
+          type: string
+          format: date
+        email:
+          type: string
     user:
-      type: "object"
-      properties:
-        _id:
-          type: "string"
-        name:
-          type: "string"
-        email:
-          type: "string"
-        photoUrl:
-          type: "string"
-        birthday:
-          type: "string"
-          format: "date"
+      allOf:
+        - $ref: '#/components/schemas/basicUser'
+        - type: "object"
+          properties:
+            _id:
+              type: string
+        
     createUser:
-      type: "object"
-      required: 
-      - name
-      - email
-      - password
-      properties:
-        name:
-          type: "string"
-        email:
-          type: "string"
-        password:
-          type: "string"
-        photoUrl:
-          type: "string"
-        birthday:
-          type: "string"
-          format: "date"
+      allOf:
+        - $ref: '#/components/schemas/basicUser'
+        - type: "object"
+          required: 
+          - firstName
+          - lastName
+          - email
+          - password
+          properties:
+            password:
+              type: string
+
     loginUser:
       type: object
       properties:
         email:
-            type: "string"
+            type: string
         password:
-          type: "string"
-    basicUser:
-      type: object
-      properties:
-        name:
-          type: "string"
-        email:
-          type: "string"
-        photoUrl:
-          type: "string"
+          type: string
     users:
       type: array
       items:
-        $ref: '#/components/schemas/basicUser'
+        $ref: '#/components/schemas/user'
   # posts
     post:
       type: "object"
       properties:
         _id:
-          type: "string"
+          type: string
         user:
           $ref: '#/components/schemas/basicUser'
         type:
           $ref: '#/components/schemas/postType'
         text: 
-          type: "string"
+          type: string
           description: "post text content"
         likes:
           type: number
         createdAt:
-          type: "string"
+          type: string
           format: "date"
     createPost:
       properties:
         type:
           $ref: '#/components/schemas/postType'
         text:
-          type: "string"
+          type: string
           description: "post text content"
     posts:
       type: array
@@ -546,27 +540,27 @@ components:
       type: "object"
       properties:
         _id:
-          type: "string"
+          type: string
         user:
           $ref: '#/components/schemas/basicUser'
         type:
           $ref: '#/components/schemas/commentType'
         text: 
-          type: "string"
+          type: string
           description: "post text content"
         likes:
           type: "array"
           items:
-            type: "string"
+            type: string
         createdAt:
-          type: "string"
+          type: string
           format: "date"
     createComment:
      properties:
         type:
           $ref: '#/components/schemas/commentType'
         text:
-          type: "string"
+          type: string
           description: "comment text content" 
   # chats
     message:

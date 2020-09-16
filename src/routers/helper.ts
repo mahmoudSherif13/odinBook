@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import passport from "passport";
 import { body } from "express-validator";
-import User, { UserNaming } from "../models/user";
+import User from "../models/user";
 import Post, { PostNaming, postType } from "../models/post";
 import Chat, { messageType } from "../models/chat";
 import * as POST_ERRORS from "../errorCodes";
@@ -27,13 +27,19 @@ export const authenticateUser = [
 ];
 
 export const validateUserData = [
-  body(UserNaming.NAME)
+  body("firstName")
     .exists()
-    .withMessage("messing name")
+    .withMessage("messing first name")
     .bail()
     .isLength({ min: 3 })
     .withMessage("name must be bigger than 3 chars"),
-  body(UserNaming.EMAIL)
+  body("lastName")
+    .exists()
+    .withMessage("messing first name")
+    .bail()
+    .isLength({ min: 3 })
+    .withMessage("name must be bigger than 3 chars"),
+  body("email")
     .exists()
     .withMessage("messing email")
     .bail()
@@ -48,13 +54,13 @@ export const validateUserData = [
     })
     .withMessage("used email")
     .escape(),
-  body(UserNaming.PASSWORD)
+  body("password")
     .exists()
     .withMessage("messing password")
     .notEmpty()
     .withMessage("empty password"),
-  body(UserNaming.BIRTHDAY).optional(),
-  body(UserNaming.PHOTO_URL).optional().isURL().withMessage("invalid url"),
+  body("birthday").optional(),
+  body("photoUrl").optional().isURL().withMessage("invalid url"),
   validate,
 ];
 

@@ -2,7 +2,11 @@ import { Schema, Document, model } from "mongoose";
 
 const userSchema = new Schema(
   {
-    name: {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
       type: String,
       required: true,
     },
@@ -11,7 +15,10 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
-    password: String,
+    password: {
+      type: String,
+      required: true,
+    },
     photoUrl: String,
     birthday: String,
     friends: [
@@ -35,45 +42,25 @@ const userSchema = new Schema(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 
-userSchema.virtual("url").get(function () {
-  return "/users/" + this._id;
-});
-
-export interface IUser extends Document {
-  name: string;
+export interface UserBase {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
+
   photoUrl?: string;
   birthday?: string;
   friends?: IUser[] | string[];
   friendRequests?: IUser[] | string[];
   sentFriendRequests?: IUser[] | string[];
-  //time stamps
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export interface UserBase {
-  _id?: string;
-  name: string;
-  email: string;
-  password: string;
-  photoUrl?: string;
-  birthday?: string;
-}
-
-export const enum UserNaming {
-  NAME = "name",
-  EMAIL = "email",
-  BIRTHDAY = "birthday",
-  PHOTO_URL = "photoUrl",
-  PASSWORD = "password",
-  FRIENDS = "friends",
-  FRIEND_REQUESTS = "friendRequests",
-  SENT_FRIEND_REQUESTS = "sentFriendRequests",
-}
+export interface IUser extends Document, UserBase {}
 
 export default model<IUser>("User", userSchema);

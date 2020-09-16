@@ -6,8 +6,9 @@ import { messageType, messageState } from "../../models/chat";
 
 export function generateUser(update = {}): UserBase {
   const gen = Date.now() + generateUuid();
-  const userData = {
-    name: gen,
+  const userData: UserBase = {
+    firstName: gen,
+    lastName: gen,
     password: "password",
     email: gen + "@gmail.com",
     photoUrl: "https://www.url.com/photo.jpg",
