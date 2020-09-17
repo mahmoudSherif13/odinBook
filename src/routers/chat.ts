@@ -20,7 +20,7 @@ router.get("/chats/:chatId", chatController.show);
 router.post(
   "/chats/:chatId/messages/",
   validateMessageData,
-  chatController.createMessage
+  chatController.newMessage
 );
 
 export default router;

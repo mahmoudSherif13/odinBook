@@ -1,10 +1,13 @@
-import User from "../models/user";
 import { controllerFunction } from "./helper/types";
 import {
   getFriendsByUserId,
   getSentFriendRequestsByUserId,
   getFriendRequestsByUserId,
 } from "./helper/getters";
+import {
+  createFriendRequest,
+  responseToFriendRequest,
+} from "./helper/creators";
 
 export const listUserFriends: controllerFunction = async (req, res, next) => {
   try {
@@ -17,13 +20,7 @@ export const listUserFriends: controllerFunction = async (req, res, next) => {
 
 export const createRequest: controllerFunction = async (req, res, next) => {
   try {
-    await User.findByIdAndUpdate(req.body.userId, {
-      $addToSet: { friendRequests: req.user._id },
-    }).exec();
-    await User.findByIdAndUpdate(req.user._id, {
-      $addToSet: { sentFriendRequests: req.body.userId },
-    }).exec();
-
+    await createFriendRequest(req.user._id, req.body.userId);
     res.sendStatus(200);
   } catch (err) {
     next(err);
@@ -52,21 +49,11 @@ export const listRequests: controllerFunction = async (req, res, next) => {
 
 export const response: controllerFunction = async (req, res, next) => {
   try {
-    await User.findByIdAndUpdate(req.user._id, {
-      $pull: { friendRequests: req.params.userId },
-    });
-    await User.findByIdAndUpdate(req.params.userId, {
-      $pull: { sentFriendRequests: req.user._id },
-    });
-
-    if (req.body.response === "accept") {
-      await User.findByIdAndUpdate(req.user._id, {
-        $addToSet: { friends: req.params.userId },
-      });
-      await User.findByIdAndUpdate(req.params.userId, {
-        $addToSet: { friends: req.user._id },
-      });
-    }
+    await responseToFriendRequest(
+      req.user._id,
+      req.params.userId,
+      req.body.response
+    );
     res.sendStatus(200);
   } catch (err) {
     next(err);

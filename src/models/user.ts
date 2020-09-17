@@ -61,6 +61,10 @@ export interface UserBase {
   updatedAt?: Date;
 }
 
+export interface UserBaseWithId extends UserBase {
+  _id: IUser["_id"];
+}
+
 export interface IUser extends Document, UserBase {}
 
 export default model<IUser>("User", userSchema);

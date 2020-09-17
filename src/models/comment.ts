@@ -44,6 +44,10 @@ export interface CommentBase {
   likes?: IUser[];
 }
 
+export interface CommentBaseWithId extends CommentBase {
+  _id: IComment["_id"];
+}
+
 export type IComment = Document & CommentBase;
 
 export default model<IComment>("Comment", commentSchema);

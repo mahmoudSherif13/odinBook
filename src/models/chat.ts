@@ -1,6 +1,16 @@
 import { Schema, Document, model } from "mongoose";
 import { IUser } from "./user";
 
+export enum messageType {
+  text = "text",
+}
+
+export enum messageState {
+  hold = "hold",
+  received = "received",
+  read = "read",
+}
+
 const messageSchema = new Schema(
   {
     user: {
@@ -10,12 +20,12 @@ const messageSchema = new Schema(
     },
     state: {
       type: String,
-      enum: ["hold", "received", "read"],
+      enum: Object.values(messageState),
       required: true,
     },
     type: {
       type: String,
-      enum: ["text"],
+      enum: Object.values(messageType),
       required: true,
     },
     text: {
@@ -41,25 +51,24 @@ const chatSchema = new Schema({
   ],
 });
 
-export interface IMessage extends Document {
+export interface MessageBase {
   user: IUser | string;
   state: messageState;
   type: messageType;
   text: string;
 }
 
-export interface IChat extends Document {
+export interface ChatBase {
   users: IUser[] | string[];
-  messages?: any[];
+  messages?: MessageBase[];
 }
 
-export enum messageType {
-  text = "text",
+export interface ChatBaseWithId extends ChatBase {
+  _id: IChat["_id"];
 }
 
-export enum messageState {
-  hold = "hold",
-  received = "received",
-  read = "read",
-}
+export interface IMessage extends Document, MessageBase {}
+
+export interface IChat extends Document, ChatBase {}
+
 export default model<IChat>("Chat", chatSchema);

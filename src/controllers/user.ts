@@ -1,5 +1,3 @@
-import User from "../models/user";
-import * as bcrypt from "bcryptjs";
 import { controllerFunction } from "./helper/types";
 import {
   getUserDataByUserId,
@@ -9,14 +7,12 @@ import {
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import dotenv from "dotenv";
+import { createUser } from "./helper/creators";
 dotenv.config();
 
 export const create: controllerFunction = async (req, res, next) => {
   try {
-    const userData = req.body;
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    userData.password = hashedPassword;
-    const userId = (await User.create(userData))._id;
+    const userId = await createUser(req.body);
     res.json(await getUserDataByUserId(userId));
   } catch (err) {
     next(err);

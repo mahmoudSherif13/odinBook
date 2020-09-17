@@ -3,7 +3,6 @@ import {
   getPostsByUserId,
   getPostById,
   getCommentsByPostId,
-  getPostAndLikesListById,
   getFeedPostsByUserId,
 } from "./helper/getters";
 import { createPost } from "./helper/creators";
@@ -29,9 +28,9 @@ export const getUserPosts: controllerFunction = async (req, res, next) => {
 
 export const show: controllerFunction = async (req, res, next) => {
   try {
-    const post = await getPostAndLikesListById(req.params.postId);
+    const post = await getPostById(req.params.postId);
     const comments = await getCommentsByPostId(req.params.postId);
-    res.json({ ...post.toJSON(), comments });
+    res.json({ ...post, comments });
   } catch (err) {
     next(err);
   }

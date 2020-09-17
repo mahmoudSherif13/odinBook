@@ -1,6 +1,10 @@
-import User, { IUser, UserBase } from "../../models/user";
-import Post, { IPost, PostBase } from "../../models/post";
-import Comment, { IComment } from "../../models/comment";
+import User, { IUser, UserBaseWithId } from "../../models/user";
+import Post, { IPost, PostBase, PostBaseWithId } from "../../models/post";
+import Comment, {
+  CommentBase,
+  CommentBaseWithId,
+  IComment,
+} from "../../models/comment";
 import {
   USER_SELECTOR,
   COMMENT_SELECTOR,
@@ -10,14 +14,16 @@ import {
 import Chat, { IChat } from "../../models/chat";
 
 // user
-export async function getUserDataByUserId(userId: string): Promise<IUser> {
+export async function getUserDataByUserId(
+  userId: string
+): Promise<UserBaseWithId> {
   return await User.findById(userId, USER_SELECTOR);
 }
 
 // friends
 export async function getFriendsByUserId(
   userId: string
-): Promise<IUser[] | string[]> {
+): Promise<UserBaseWithId[] | string[]> {
   return (
     await User.findById(userId, "friends")
       .populate("friends", USER_SELECTOR)
@@ -27,7 +33,7 @@ export async function getFriendsByUserId(
 
 export async function getSentFriendRequestsByUserId(
   userId: string
-): Promise<IUser[] | string[]> {
+): Promise<UserBaseWithId[] | string[]> {
   return (
     await User.findById(userId, "sentFriendRequests")
       .populate("sentFriendRequests", USER_SELECTOR)
@@ -37,7 +43,7 @@ export async function getSentFriendRequestsByUserId(
 
 export async function getFriendRequestsByUserId(
   userId: string
-): Promise<IUser[] | string[]> {
+): Promise<UserBaseWithId[] | string[]> {
   return (
     await User.findById(userId, "friendRequests")
       .populate("friendRequests", USER_SELECTOR)
@@ -46,7 +52,9 @@ export async function getFriendRequestsByUserId(
 }
 
 // posts
-export async function getPostsByUserId(userId: string): Promise<IPost[]> {
+export async function getPostsByUserId(
+  userId: string
+): Promise<PostBaseWithId[]> {
   return await Post.find({ user: userId }, POST_SELECTOR)
     .populate("user", USER_SELECTOR)
     .sort({
@@ -55,43 +63,43 @@ export async function getPostsByUserId(userId: string): Promise<IPost[]> {
     .exec();
 }
 
-export async function getPostById(postId: string) {
-  const post = await Post.findById(postId, POST_SELECTOR)
-    .populate("user", USER_SELECTOR)
-    .exec();
-  return { ...post.toJSON(), likes: post.likes.length };
-}
-
-export async function getPostAndLikesListById(postId: string): Promise<IPost> {
-  const post = await Post.findById(postId, POST_SELECTOR)
-    .populate("user", USER_SELECTOR)
-    .populate("likes", USER_SELECTOR)
-    .exec();
-  return post;
+export async function getPostById(postId: string): Promise<PostBaseWithId> {
+  return (
+    await Post.findById(postId, POST_SELECTOR)
+      .populate("user", USER_SELECTOR)
+      .populate("likes", USER_SELECTOR)
+      .exec()
+  ).toJSON();
 }
 
 export async function getLikesByPostId(
   postId: string
-): Promise<IUser[] | string[]> {
+): Promise<UserBaseWithId[] | string[]> {
   return await (
     await Post.findById(postId).populate("likes", USER_SELECTOR).exec()
   ).likes;
 }
 
-export async function getCommentsByPostId(postId: string): Promise<IComment[]> {
+export async function getCommentsByPostId(
+  postId: string
+): Promise<CommentBaseWithId[]> {
   const comment = await Comment.find({ post: postId }, COMMENT_SELECTOR)
     .populate("user", USER_SELECTOR)
     .exec();
   return comment;
 }
 
-export async function getCommentById(commentId: string): Promise<IComment> {
+export async function getCommentById(
+  commentId: string
+): Promise<CommentBaseWithId> {
   return await Comment.findById(commentId, COMMENT_SELECTOR)
     .populate("user", USER_SELECTOR)
     .exec();
 }
 
-export async function getFeedPostsByUserId(userId: string): Promise<IPost[]> {
+export async function getFeedPostsByUserId(
+  userId: string
+): Promise<PostBaseWithId[]> {
   const feedUsers: any = await getFriendsByUserId(userId);
   feedUsers.push(userId);
   const postList = await Post.find({ user: { $in: feedUsers } })
