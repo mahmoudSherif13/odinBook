@@ -1,11 +1,11 @@
 import { controllerFunction } from "./helper/types";
 import { MessageBase, messageState } from "../models/chat";
-import { getChatsByUserId, getChatById } from "./helper/getters";
 import {
+  getChatsByUserId,
+  getChatById,
   checkIfChatCreated,
-  createChat,
-  createMessage,
-} from "./helper/creators";
+} from "./helper/getters";
+import { createChat, createMessage } from "./helper/creators";
 
 export const index: controllerFunction = async (req, res, next) => {
   try {

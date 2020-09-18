@@ -8,6 +8,7 @@ import jwt from "jsonwebtoken";
 import passport from "passport";
 import dotenv from "dotenv";
 import { createUser } from "./helper/creators";
+import { UserBaseWithId } from "src/models/user";
 dotenv.config();
 
 export const create: controllerFunction = async (req, res, next) => {
@@ -39,24 +40,27 @@ export const getUserProfile: controllerFunction = async (req, res, next) => {
   }
 };
 
+async function generateToken(user: UserBaseWithId): Promise<string> {
+  return jwt.sign(JSON.stringify(user), process.env.JWT);
+}
+
 export const login: controllerFunction = async (req, res) => {
-  passport.authenticate("local", { session: false }, (err, user, info) => {
-    if (err || !user) {
-      return res.status(400).json({
-        message: info.message,
+  passport.authenticate(
+    "local",
+    { session: false },
+    async (err, user, info) => {
+      if (err || !user) {
+        return res.status(400).json({
+          message: info.message,
+        });
+      }
+      req.login(user, { session: false }, async (err) => {
+        if (err) {
+          res.send(err);
+        }
+        const token = await generateToken(user);
+        res.json({ user, token });
       });
     }
-    req.login(user, { session: false }, (err) => {
-      if (err) {
-        res.send(err);
-      }
-
-      jwt.sign(JSON.stringify(user), process.env.JWT, (err, token) => {
-        if (err) {
-          return res.status(404).json(err);
-        }
-        return res.json({ user, token });
-      });
-    });
-  })(req, res);
+  )(req, res);
 };

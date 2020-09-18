@@ -3,11 +3,11 @@ import app from "../app";
 import User from "../models/user";
 import { invalidId } from "./helper/testData";
 import {
-  createUser,
-  createUserAndGetToken,
+  generateDbUser,
+  generateDbUserAndGetToken,
   getToken,
-  createPost,
-  createFriend,
+  generateDbPost,
+  generateDbFriend,
 } from "./helper/helper";
 import {
   expectPosts,
@@ -31,7 +31,7 @@ afterEach(async () => {
 
 describe("sign in POST /login", () => {
   it("OK 200", async () => {
-    const user = await createUser({ password: "password" });
+    const user = await generateDbUser({ password: "password" });
     const res = await request(app)
       .post("/login/")
       .send({
@@ -44,7 +44,7 @@ describe("sign in POST /login", () => {
   });
 
   it("wrong password", async () => {
-    const user = await createUser();
+    const user = await generateDbUser();
     await request(app)
       .post("/login/")
       .send({
@@ -55,7 +55,7 @@ describe("sign in POST /login", () => {
   });
 
   it("wrong email", async () => {
-    const user = await createUser();
+    const user = await generateDbUser();
     await request(app)
       .post("/login/")
       .send({
@@ -111,16 +111,16 @@ describe("sign up POST /users", () => {
 describe("current user profile GET /profile", () => {
   it("OK 200", async () => {
     // populate the database
-    const { user, token } = await createUserAndGetToken();
+    const { user, token } = await generateDbUserAndGetToken();
     const posts = [
-      await createPost(user),
-      await createPost(user),
-      await createPost(user),
+      await generateDbPost(user),
+      await generateDbPost(user),
+      await generateDbPost(user),
     ];
     const friends = [
-      await createFriend(user),
-      await createFriend(user),
-      await createFriend(user),
+      await generateDbFriend(user),
+      await generateDbFriend(user),
+      await generateDbFriend(user),
     ];
 
     const res = await request(app)
@@ -140,7 +140,7 @@ describe("current user profile GET /profile", () => {
 
 describe("show user data GET /users/{userId}/", () => {
   it("show user", async () => {
-    const user = await createUser();
+    const user = await generateDbUser();
 
     const res = await request(app)
       .get("/users/" + user._id)
@@ -150,7 +150,7 @@ describe("show user data GET /users/{userId}/", () => {
   });
 
   it("not auth", async () => {
-    const user = await createUser();
+    const user = await generateDbUser();
     await request(app)
       .get("/users/" + user._id)
       .expect(401);

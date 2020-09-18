@@ -60,11 +60,15 @@ export interface MessageBase {
 
 export interface ChatBase {
   users: IUser[] | string[];
-  messages?: MessageBase[];
+  messages?: MessageBaseWithId[];
 }
 
 export interface ChatBaseWithId extends ChatBase {
   _id: IChat["_id"];
+}
+
+export interface MessageBaseWithId extends MessageBase {
+  _id: IMessage["_id"];
 }
 
 export interface IMessage extends Document, MessageBase {}

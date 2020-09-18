@@ -2,10 +2,10 @@ import request from "supertest";
 import app from "../app";
 import User from "../models/user";
 import {
-  createUserAndGetToken,
-  createUser,
-  createFriend,
-  createFriendRequest,
+  generateDbUserAndGetToken,
+  generateDbUser,
+  generateDbFriend,
+  generateDbFriendRequest,
   clearDataBase,
   getToken,
 } from "./helper/helper";
@@ -19,11 +19,11 @@ afterEach(clearDataBase);
 
 describe("show friends list GET /friends", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
+    const { user, token } = await generateDbUserAndGetToken();
     const friends = [
-      await createFriend(user),
-      await createFriend(user),
-      await createFriend(user),
+      await generateDbFriend(user),
+      await generateDbFriend(user),
+      await generateDbFriend(user),
     ];
     const res = await request(app)
       .get("/friends/")
@@ -39,11 +39,11 @@ describe("show friends list GET /friends", () => {
 
 describe("list friendRequests GET /friends/requests", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
+    const { user, token } = await generateDbUserAndGetToken();
     const friendRequests = [
-      await createFriendRequest(user),
-      await createFriendRequest(user),
-      await createFriendRequest(user),
+      await generateDbFriendRequest(user),
+      await generateDbFriendRequest(user),
+      await generateDbFriendRequest(user),
     ];
     const res = await request(app)
       .get("/friends/requests")
@@ -58,11 +58,15 @@ describe("list friendRequests GET /friends/requests", () => {
 
 describe("list sent friendRequests GET /friends/requests/sent", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
-    const users = [await createUser(), await createUser(), await createUser()];
-    await createFriendRequest(users[0], user);
-    await createFriendRequest(users[1], user);
-    await createFriendRequest(users[2], user);
+    const { user, token } = await generateDbUserAndGetToken();
+    const users = [
+      await generateDbUser(),
+      await generateDbUser(),
+      await generateDbUser(),
+    ];
+    await generateDbFriendRequest(users[0], user);
+    await generateDbFriendRequest(users[1], user);
+    await generateDbFriendRequest(users[2], user);
     const res = await request(app)
       .get("/friends/requests/sent")
       .set("Authorization", "Bearer " + token)
@@ -76,8 +80,8 @@ describe("list sent friendRequests GET /friends/requests/sent", () => {
 
 describe("creat a new friend request POST /friends/request", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
-    const friend = await createUser();
+    const { user, token } = await generateDbUserAndGetToken();
+    const friend = await generateDbUser();
     await request(app)
       .post("/friends/requests")
       .send({ userId: friend._id })
@@ -103,7 +107,7 @@ describe("creat a new friend request POST /friends/request", () => {
   });
 
   it("on auth", async () => {
-    const friend = await createUser();
+    const friend = await generateDbUser();
     await request(app)
       .post("/friends/requests")
       .send({ userId: friend._id })
@@ -128,9 +132,9 @@ describe("creat a new friend request POST /friends/request", () => {
 
 describe("response to a friend request PUT /friends/requests/requestId", () => {
   it("accept the request", async () => {
-    const { user, token } = await createUserAndGetToken();
-    const friend = await createUser();
-    await createFriendRequest(user, friend);
+    const { user, token } = await generateDbUserAndGetToken();
+    const friend = await generateDbUser();
+    await generateDbFriendRequest(user, friend);
     await request(app)
       .put("/friends/requests/" + friend._id)
       .send({ response: "accept" })
@@ -172,9 +176,9 @@ describe("response to a friend request PUT /friends/requests/requestId", () => {
   });
 
   it("no auth", async () => {
-    const user = await createUser();
-    const friend = await createUser();
-    await createFriendRequest(user, friend);
+    const user = await generateDbUser();
+    const friend = await generateDbUser();
+    await generateDbFriendRequest(user, friend);
     await request(app)
       .put("/friends/requests/" + friend._id)
       .send({ response: "accept" })
@@ -182,9 +186,9 @@ describe("response to a friend request PUT /friends/requests/requestId", () => {
   });
 
   it("wrong userId", async () => {
-    const { user, token } = await createUserAndGetToken();
-    const friend = await createUser();
-    await createFriendRequest(user, friend);
+    const { user, token } = await generateDbUserAndGetToken();
+    const friend = await generateDbUser();
+    await generateDbFriendRequest(user, friend);
     await request(app)
       .put("/friends/requests/" + invalidId)
       .send({ response: "accept" })

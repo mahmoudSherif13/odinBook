@@ -1,10 +1,10 @@
 import {
-  createPost,
-  createUserAndGetToken,
+  generateDbPost,
+  generateDbUserAndGetToken,
   getToken,
   clearDataBase,
-  createUser,
-  createLike,
+  generateDbUser,
+  generateDbLike,
 } from "./helper/helper";
 import { expectUsers } from "./helper/expect";
 import request from "supertest";
@@ -19,8 +19,8 @@ afterEach(clearDataBase);
 
 describe("create like POST /posts/postId/likes", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
-    const post = await createPost(user);
+    const { user, token } = await generateDbUserAndGetToken();
+    const post = await generateDbPost(user);
     await request(app)
       .post("/posts/" + post._id + "/likes/")
       .set("Authorization", "Bearer " + token)
@@ -37,8 +37,8 @@ describe("create like POST /posts/postId/likes", () => {
   });
 
   it("without auth", async () => {
-    const user = await createUser();
-    const post = await createPost(user);
+    const user = await generateDbUser();
+    const post = await generateDbPost(user);
     await request(app)
       .post("/posts/" + post._id + "/likes/")
       .expect(401);
@@ -54,12 +54,16 @@ describe("create like POST /posts/postId/likes", () => {
 
 describe("show likes GET /posts/postid/likes", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
-    const users = [await createUser(), await createUser(), await createUser()];
-    const post = await createPost(user);
-    await createLike(users[0], post);
-    await createLike(users[1], post);
-    await createLike(users[2], post);
+    const { user, token } = await generateDbUserAndGetToken();
+    const users = [
+      await generateDbUser(),
+      await generateDbUser(),
+      await generateDbUser(),
+    ];
+    const post = await generateDbPost(user);
+    await generateDbLike(users[0], post);
+    await generateDbLike(users[1], post);
+    await generateDbLike(users[2], post);
     const res = await request(app)
       .get("/posts/" + post._id + "/likes/")
       .set("Authorization", "Bearer " + token)
@@ -68,11 +72,15 @@ describe("show likes GET /posts/postid/likes", () => {
   });
 
   it("no auth", async () => {
-    const users = [await createUser(), await createUser(), await createUser()];
-    const post = await createPost(users[0]);
-    await createLike(users[0], post);
-    await createLike(users[1], post);
-    await createLike(users[2], post);
+    const users = [
+      await generateDbUser(),
+      await generateDbUser(),
+      await generateDbUser(),
+    ];
+    const post = await generateDbPost(users[0]);
+    await generateDbLike(users[0], post);
+    await generateDbLike(users[1], post);
+    await generateDbLike(users[2], post);
     await request(app)
       .get("/posts/" + post._id + "/likes/")
       .expect(401);

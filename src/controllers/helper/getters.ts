@@ -128,6 +128,19 @@ export async function getChatsByUserId(userId: string) {
   return chatsArr;
 }
 
+export async function checkIfChatCreated(
+  userId: string,
+  friendId: string
+): Promise<boolean> {
+  const dbChat = await Chat.findOne({
+    users: { $all: [userId, friendId] },
+  });
+  if (dbChat) {
+    return true;
+  }
+  return false;
+}
+
 export async function getChatById(chatId: string): Promise<IChat> {
   return await Chat.findById(chatId, CHAT_SELECTOR);
 }

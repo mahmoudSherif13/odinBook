@@ -1,10 +1,10 @@
 import {
-  createPost,
-  createUserAndGetToken,
+  generateDbPost,
+  generateDbUserAndGetToken,
   getToken,
   clearDataBase,
-  createUser,
-  createComment,
+  generateDbUser,
+  generateDbComment,
 } from "./helper/helper";
 import { expectComments, expectComment } from "./helper/expect";
 import { generateComment } from "./helper/generators";
@@ -20,9 +20,9 @@ afterEach(clearDataBase);
 
 describe("create comment POST /posts/postId/comments", () => {
   it("create comment", async () => {
-    const { user, token } = await createUserAndGetToken();
+    const { user, token } = await generateDbUserAndGetToken();
     const commentData = generateComment();
-    const post = await createPost(user);
+    const post = await generateDbPost(user);
     const res = await request(app)
       .post("/posts/" + post._id + "/comments/")
       .send(commentData)
@@ -46,7 +46,7 @@ describe("create comment POST /posts/postId/comments", () => {
 
   it("without auth", async () => {
     const commentData = generateComment();
-    const post = await createPost();
+    const post = await generateDbPost();
     await request(app)
       .post("/posts/" + post._id + "/comments/")
       .send(commentData)
@@ -54,9 +54,9 @@ describe("create comment POST /posts/postId/comments", () => {
   });
 
   it("invalid type", async () => {
-    const { user, token } = await createUserAndGetToken();
+    const { user, token } = await generateDbUserAndGetToken();
     const commentData = generateComment({ type: "invalid type" });
-    const post = await createPost(user);
+    const post = await generateDbPost(user);
     await request(app)
       .post("/posts/" + post._id + "/comments/")
       .send(commentData)
@@ -65,9 +65,9 @@ describe("create comment POST /posts/postId/comments", () => {
   });
 
   it("empty text", async () => {
-    const { user, token } = await createUserAndGetToken();
+    const { user, token } = await generateDbUserAndGetToken();
     const commentData = generateComment({ text: "" });
-    const post = await createPost(user);
+    const post = await generateDbPost(user);
     await request(app)
       .post("/posts/" + post._id + "/comments/")
       .send(commentData)
@@ -76,9 +76,9 @@ describe("create comment POST /posts/postId/comments", () => {
   });
 
   it("empty text", async () => {
-    const { user, token } = await createUserAndGetToken();
+    const { user, token } = await generateDbUserAndGetToken();
     const commentData = generateComment({ text: "" });
-    const post = await createPost(user);
+    const post = await generateDbPost(user);
     await request(app)
       .post("/posts/" + post._id + "/comments/")
       .send(commentData)
@@ -98,13 +98,17 @@ describe("create comment POST /posts/postId/comments", () => {
 
 describe("show comments GET /posts/postid/comments", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
-    const users = [await createUser(), await createUser(), await createUser()];
-    const post = await createPost(user);
+    const { user, token } = await generateDbUserAndGetToken();
+    const users = [
+      await generateDbUser(),
+      await generateDbUser(),
+      await generateDbUser(),
+    ];
+    const post = await generateDbPost(user);
     const comments = [
-      await createComment(users[0], post),
-      await createComment(users[1], post),
-      await createComment(users[2], post),
+      await generateDbComment(users[0], post),
+      await generateDbComment(users[1], post),
+      await generateDbComment(users[2], post),
     ];
     const res = await request(app)
       .get("/posts/" + post._id + "/comments/")
@@ -114,11 +118,15 @@ describe("show comments GET /posts/postid/comments", () => {
   });
 
   it("no auth", async () => {
-    const users = [await createUser(), await createUser(), await createUser()];
-    const post = await createPost(users[0]);
-    await createComment(users[0], post);
-    await createComment(users[1], post);
-    await createComment(users[2], post);
+    const users = [
+      await generateDbUser(),
+      await generateDbUser(),
+      await generateDbUser(),
+    ];
+    const post = await generateDbPost(users[0]);
+    await generateDbComment(users[0], post);
+    await generateDbComment(users[1], post);
+    await generateDbComment(users[2], post);
     await request(app)
       .get("/posts/" + post._id + "/comments/")
       .expect(401);

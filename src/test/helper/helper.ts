@@ -11,13 +11,16 @@ import {
   generateMessage,
 } from "./generators";
 
-export async function createUser(update = {}): Promise<IUser> {
+export async function generateDbUser(update = {}): Promise<IUser> {
   const userData = generateUser(update);
   return (await request(app).post("/users/").send(userData)).body;
 }
 
-export async function createFriend(user: IUser, update = {}): Promise<IUser> {
-  const friend = await createUser(update);
+export async function generateDbFriend(
+  user: IUser,
+  update = {}
+): Promise<IUser> {
+  const friend = await generateDbUser(update);
   await User.findByIdAndUpdate(user._id, {
     $addToSet: { friends: friend._id },
   });
@@ -27,13 +30,13 @@ export async function createFriend(user: IUser, update = {}): Promise<IUser> {
   return friend;
 }
 
-export async function createFriendRequest(
+export async function generateDbFriendRequest(
   resUser: IUser,
   senUser?: IUser,
   update = {}
 ): Promise<IUser> {
   if (!senUser) {
-    senUser = await createUser(update);
+    senUser = await generateDbUser(update);
   }
   await User.findByIdAndUpdate(resUser._id, {
     $addToSet: { friendRequests: senUser._id },
@@ -46,7 +49,7 @@ export async function createFriendRequest(
 
 export async function getToken(user?: IUser): Promise<string> {
   if (user === undefined) {
-    user = await createUser();
+    user = await generateDbUser();
   }
   const res = await request(app)
     .post("/login/")
@@ -55,18 +58,21 @@ export async function getToken(user?: IUser): Promise<string> {
   return res.body.token;
 }
 
-export async function createUserAndGetToken(): Promise<{
+export async function generateDbUserAndGetToken(): Promise<{
   user: IUser;
   token: string;
 }> {
-  const user = await createUser();
+  const user = await generateDbUser();
   const token = await getToken(user);
   return { user, token };
 }
 
-export async function createPost(user?: IUser, update = {}): Promise<IPost> {
+export async function generateDbPost(
+  user?: IUser,
+  update = {}
+): Promise<IPost> {
   if (!user) {
-    user = await createUser();
+    user = await generateDbUser();
   }
   const token = await getToken(user);
   const postData = generatePost(update);
@@ -78,16 +84,16 @@ export async function createPost(user?: IUser, update = {}): Promise<IPost> {
   return res.body;
 }
 
-export async function createComment(
+export async function generateDbComment(
   user?: IUser,
   post?: IPost,
   update = {}
 ): Promise<IComment> {
   if (!user) {
-    user = await createUser();
+    user = await generateDbUser();
   }
   if (!post) {
-    post = await createPost(user);
+    post = await generateDbPost(user);
   }
   const token = await getToken(user);
   const commentData = generateComment(update);
@@ -99,16 +105,15 @@ export async function createComment(
   return res.body;
 }
 
-export async function createLike(
+export async function generateDbLike(
   user?: IUser,
-  post?: IPost,
-  update = {}
+  post?: IPost
 ): Promise<void> {
   if (!user) {
-    user = await createUser();
+    user = await generateDbUser();
   }
   if (!post) {
-    post = await createPost(user);
+    post = await generateDbPost(user);
   }
   const token = await getToken(user);
   await request(app)
@@ -117,17 +122,17 @@ export async function createLike(
     .expect(200);
 }
 
-export async function createChat(
-  senUser: IUser,
-  resUser?: IUser,
+export async function generateDbChat(
+  user: IUser,
+  friend?: IUser,
   update = {}
 ): Promise<IChat> {
-  if (!resUser) {
-    resUser = await createUser();
+  if (!friend) {
+    friend = await generateDbUser();
   }
-  const token = await getToken(senUser);
+  const token = await getToken(user);
   const chatData = {
-    user: resUser._id,
+    user: friend._id,
     ...update,
   };
   const res = await request(app)
@@ -138,7 +143,7 @@ export async function createChat(
   return res.body;
 }
 
-export async function createMessage(
+export async function generateDbMessage(
   chat: IChat,
   user: IUser,
   update = {}

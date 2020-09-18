@@ -2,7 +2,11 @@ import User, { UserBase } from "../../models/user";
 import Comment, { CommentBase } from "../../models/comment";
 import Post, { PostBase } from "../../models/post";
 import * as bcrypt from "bcryptjs";
-import Chat, { MessageBase, messageState } from "../../models/chat";
+import Chat, {
+  MessageBase,
+  MessageBaseWithId,
+  messageState,
+} from "../../models/chat";
 import { MESSAGE_SELECTOR } from "../helper/selectors";
 
 export async function createUser(userData: UserBase): Promise<string> {
@@ -59,19 +63,6 @@ export async function responseToFriendRequest(
   }
 }
 
-export async function checkIfChatCreated(
-  userId: string,
-  friendId: string
-): Promise<boolean> {
-  const dbChat = await Chat.findOne({
-    users: { $all: [userId, friendId] },
-  });
-  if (dbChat) {
-    return true;
-  }
-  return false;
-}
-
 export async function createChat(
   userId: string,
   friendId: string
@@ -86,7 +77,7 @@ export async function createChat(
 export async function createMessage(
   chatId: string,
   messageData: MessageBase
-): Promise<MessageBase> {
+): Promise<MessageBaseWithIds> {
   await Chat.findByIdAndUpdate(chatId, {
     $push: {
       messages: {

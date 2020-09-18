@@ -2,10 +2,10 @@ import request from "supertest";
 import app from "../app";
 import Post from "../models/post";
 import {
-  createUserAndGetToken,
-  createPost,
-  createUser,
-  createFriend,
+  generateDbUserAndGetToken,
+  generateDbPost,
+  generateDbUser,
+  generateDbFriend,
   getToken,
   clearDataBase,
 } from "./helper/helper";
@@ -22,12 +22,12 @@ afterEach(clearDataBase);
 
 describe("get current user feed GET /feed", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
-    const friend = await createFriend(user);
+    const { user, token } = await generateDbUserAndGetToken();
+    const friend = await generateDbFriend(user);
     const posts = [
-      await createPost(friend),
-      await createPost(friend),
-      await createPost(friend),
+      await generateDbPost(friend),
+      await generateDbPost(friend),
+      await generateDbPost(friend),
     ];
     const res = await request(app)
       .get("/feed/")
@@ -43,11 +43,11 @@ describe("get current user feed GET /feed", () => {
 
 describe("get user posts GET /user/{id}/posts", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
+    const { user, token } = await generateDbUserAndGetToken();
     const posts = [
-      await createPost(user),
-      await createPost(user),
-      await createPost(user),
+      await generateDbPost(user),
+      await generateDbPost(user),
+      await generateDbPost(user),
     ];
     const res = await request(app)
       .get("/users/" + user._id + "/posts/")
@@ -57,7 +57,7 @@ describe("get user posts GET /user/{id}/posts", () => {
   });
 
   it("no auth ", async () => {
-    const user = await createUser();
+    const user = await generateDbUser();
     await request(app)
       .get("/users/" + user._id + "/posts/")
       .expect(401);
@@ -73,8 +73,8 @@ describe("get user posts GET /user/{id}/posts", () => {
 
 describe("show post GET /posts/postId", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
-    const post = await createPost(user);
+    const { user, token } = await generateDbUserAndGetToken();
+    const post = await generateDbPost(user);
     const res = await request(app)
       .get("/posts/" + post._id)
       .set("Authorization", "Bearer " + token)
@@ -83,8 +83,8 @@ describe("show post GET /posts/postId", () => {
   });
 
   it("no auth", async () => {
-    const user = await createUser();
-    const post = await createPost(user);
+    const user = await generateDbUser();
+    const post = await generateDbPost(user);
     await request(app)
       .get("/posts/" + post._id)
       .expect(401);
@@ -93,7 +93,7 @@ describe("show post GET /posts/postId", () => {
 
 describe("create post POST /posts", () => {
   it("200 OK", async () => {
-    const { user, token } = await createUserAndGetToken();
+    const { user, token } = await generateDbUserAndGetToken();
     const postData = generatePost();
     const id = await cp({ ...postData, user: user._id });
     // check db
