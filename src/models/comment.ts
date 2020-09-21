@@ -1,5 +1,5 @@
 import { Schema, Document, model } from "mongoose";
-import { IUser } from "./user";
+import { IUser, UserBaseWithId } from "./user";
 
 export enum commentType {
   text = "text",
@@ -39,9 +39,9 @@ export interface CommentBase {
   type: commentType;
   text: string;
 
-  user?: IUser | string;
+  user?: UserBaseWithId | IUser["_id"];
   post?: string;
-  likes?: IUser[];
+  likes?: UserBaseWithId[] | IUser["_id"][];
 }
 
 export interface CommentBaseWithId extends CommentBase {

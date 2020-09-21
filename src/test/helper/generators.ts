@@ -2,7 +2,7 @@ import { UserBase } from "../../models/user";
 import { PostBase, postType } from "../../models/post";
 import { v4 as generateUuid } from "uuid";
 import { CommentBase, commentType } from "../../models/comment";
-import { messageType, messageState } from "../../models/chat";
+import { messageType, messageState, MessageBase } from "../../models/chat";
 
 export function generateUser(update = {}): UserBase {
   const gen = Date.now() + generateUuid();
@@ -38,11 +38,11 @@ export function generateComment(update = {}): CommentBase {
   return commentData;
 }
 
-export function generateMessage(update = {}) {
+export function generateMessage(update = {}): MessageBase {
   const gen = Date.now() + generateUuid();
-  const messageDate = {
+  const messageDate: MessageBase = {
     type: messageType.text,
-    states: messageState.hold,
+    state: messageState.hold,
     text: gen,
     ...update,
   };

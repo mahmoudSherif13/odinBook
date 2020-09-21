@@ -1,10 +1,6 @@
 import User, { IUser, UserBaseWithId } from "../../models/user";
-import Post, { IPost, PostBase, PostBaseWithId } from "../../models/post";
-import Comment, {
-  CommentBase,
-  CommentBaseWithId,
-  IComment,
-} from "../../models/comment";
+import Post, { PostBaseWithId } from "../../models/post";
+import Comment, { CommentBaseWithId } from "../../models/comment";
 import {
   USER_SELECTOR,
   COMMENT_SELECTOR,
@@ -14,16 +10,14 @@ import {
 import Chat, { IChat } from "../../models/chat";
 
 // user
-export async function getUserDataByUserId(
-  userId: string
-): Promise<UserBaseWithId> {
+export async function getUserById(userId: string): Promise<UserBaseWithId> {
   return await User.findById(userId, USER_SELECTOR);
 }
 
 // friends
 export async function getFriendsByUserId(
   userId: string
-): Promise<UserBaseWithId[] | string[]> {
+): Promise<UserBaseWithId[] | IUser["_id"][]> {
   return (
     await User.findById(userId, "friends")
       .populate("friends", USER_SELECTOR)
@@ -33,7 +27,7 @@ export async function getFriendsByUserId(
 
 export async function getSentFriendRequestsByUserId(
   userId: string
-): Promise<UserBaseWithId[] | string[]> {
+): Promise<UserBaseWithId[] | IUser["_id"][]> {
   return (
     await User.findById(userId, "sentFriendRequests")
       .populate("sentFriendRequests", USER_SELECTOR)
@@ -43,7 +37,7 @@ export async function getSentFriendRequestsByUserId(
 
 export async function getFriendRequestsByUserId(
   userId: string
-): Promise<UserBaseWithId[] | string[]> {
+): Promise<UserBaseWithId[] | IUser["_id"][]> {
   return (
     await User.findById(userId, "friendRequests")
       .populate("friendRequests", USER_SELECTOR)
@@ -74,7 +68,7 @@ export async function getPostById(postId: string): Promise<PostBaseWithId> {
 
 export async function getLikesByPostId(
   postId: string
-): Promise<UserBaseWithId[] | string[]> {
+): Promise<UserBaseWithId[]> {
   return await (
     await Post.findById(postId).populate("likes", USER_SELECTOR).exec()
   ).likes;

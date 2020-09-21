@@ -1,5 +1,5 @@
 import { Schema, Document, model } from "mongoose";
-import { IUser } from "./user";
+import { IUser, UserBaseWithId } from "./user";
 
 export enum postType {
   text = "text",
@@ -34,8 +34,8 @@ export interface PostBase {
   type: postType;
   text: string;
 
-  user?: string | IUser;
-  likes?: string[] | IUser[];
+  user?: UserBaseWithId | IUser["_id"];
+  likes?: UserBaseWithId[] | IUser["_id"][];
 }
 
 export interface PostBaseWithId extends PostBase {

@@ -15,6 +15,7 @@ export function expectPostFormat(received: PostBaseWithId): void {
   expect(received.type).toBeDefined();
   expect(received.text).toBeDefined();
   expect(received.user).toBeDefined();
+  expectUserFormat(received.user);
 }
 export function expectCommentFormat(received): void {
   expect(received._id).toBeDefined();

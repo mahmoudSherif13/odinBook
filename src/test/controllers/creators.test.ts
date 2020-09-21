@@ -20,7 +20,6 @@ import {
   clearDataBase,
   generateDbUser,
   generateDbPost,
-  generateDbChat,
 } from "../helper/helper";
 import { connect } from "../../dbConfigs/testing";
 import Chat, {

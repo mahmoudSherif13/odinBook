@@ -1,6 +1,6 @@
 import { controllerFunction } from "./helper/types";
 import {
-  getUserDataByUserId,
+  getUserById,
   getPostsByUserId,
   getFriendsByUserId,
 } from "./helper/getters";
@@ -14,7 +14,7 @@ dotenv.config();
 export const create: controllerFunction = async (req, res, next) => {
   try {
     const userId = await createUser(req.body);
-    res.json(await getUserDataByUserId(userId));
+    res.json(await getUserById(userId));
   } catch (err) {
     next(err);
   }
@@ -22,7 +22,7 @@ export const create: controllerFunction = async (req, res, next) => {
 
 export const show: controllerFunction = async (req, res, next) => {
   try {
-    const user = await getUserDataByUserId(req.params.userId);
+    const user = await getUserById(req.params.userId);
     res.json(user);
   } catch (err) {
     next(err);
@@ -31,7 +31,7 @@ export const show: controllerFunction = async (req, res, next) => {
 
 export const getUserProfile: controllerFunction = async (req, res, next) => {
   try {
-    const user = await getUserDataByUserId(req.user._id);
+    const user = await getUserById(req.user._id);
     const posts = await getPostsByUserId(req.user._id);
     const friends = await getFriendsByUserId(req.user._id);
     res.json({ user, posts, friends });

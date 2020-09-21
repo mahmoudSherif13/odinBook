@@ -77,7 +77,7 @@ export async function createChat(
 export async function createMessage(
   chatId: string,
   messageData: MessageBase
-): Promise<MessageBaseWithIds> {
+): Promise<MessageBaseWithId> {
   await Chat.findByIdAndUpdate(chatId, {
     $push: {
       messages: {

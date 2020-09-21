@@ -11,7 +11,6 @@ import request from "supertest";
 import app from "../app";
 import { invalidId } from "./helper/testData";
 import { connect } from "../dbConfigs/testing";
-import Post from "../models/post";
 
 beforeAll(connect);
 
@@ -25,15 +24,6 @@ describe("create like POST /posts/postId/likes", () => {
       .post("/posts/" + post._id + "/likes/")
       .set("Authorization", "Bearer " + token)
       .expect(200);
-
-    const dbLikes = (await Post.findById(post._id, "likes").exec()).likes;
-    let founded = false;
-    dbLikes.forEach((e) => {
-      if (e == user._id) {
-        founded = true;
-      }
-    });
-    expect(founded).toBeTruthy();
   });
 
   it("without auth", async () => {
@@ -52,7 +42,7 @@ describe("create like POST /posts/postId/likes", () => {
   });
 });
 
-describe("show likes GET /posts/postid/likes", () => {
+describe("show likes GET /posts/postId/likes", () => {
   it("200 OK", async () => {
     const { user, token } = await generateDbUserAndGetToken();
     const users = [

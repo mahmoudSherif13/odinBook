@@ -52,7 +52,7 @@ const chatSchema = new Schema({
 });
 
 export interface MessageBase {
-  user: IUser | string;
+  user?: IUser | string;
   state: messageState;
   type: messageType;
   text: string;
