@@ -29,6 +29,15 @@ export async function addLike(postId: string, userId: string): Promise<void> {
   });
 }
 
+export async function removeLike(
+  postId: string,
+  userId: string
+): Promise<void> {
+  await Post.findByIdAndUpdate(postId, {
+    $pull: { likes: [userId] },
+  });
+}
+
 export async function createFriendRequest(
   userId: string,
   friendId: string

@@ -23,6 +23,7 @@ router.get("/feed/", authenticateUser, postController.getUserFeedPost);
 // likes
 router.get("/posts/:postId/likes", likesController.show);
 router.post("/posts/:postId/likes", likesController.create);
+router.delete("/posts/:postId/likes", likesController.deleteLike);
 
 // comments
 router.get("/posts/:postId/comments", commentsController.show);
